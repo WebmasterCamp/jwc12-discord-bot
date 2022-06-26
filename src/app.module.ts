@@ -1,12 +1,15 @@
-import { DiscordModule } from '@discord-nestjs/core';
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { Intents } from 'discord.js';
-import { DiscordBotModule } from './discord-bot/discord-bot.module';
-import { DiscordBotSlashCommands } from './discord-bot/commands/commands.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configuration } from './config/configuration';
+import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+
+import { DiscordModule } from '@discord-nestjs/core'
+import { Intents } from 'discord.js'
+
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { configuration } from './config/configuration'
+import { DiscordBotSlashCommands } from './discord-bot/commands/commands.module'
+import { DiscordBotModule } from './discord-bot/discord-bot.module'
+
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -10,5 +10,5 @@ export function configuration() {
       username: process.env.DATABASE_USERNAME ?? 'postgres',
       password: process.env.DATABASE_PASSWORD ?? 'postgres',
     },
-  };
+  }
 }
