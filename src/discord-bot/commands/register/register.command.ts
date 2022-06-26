@@ -4,11 +4,11 @@ import { Command, DiscordCommand } from '@discord-nestjs/core'
 import { CommandInteraction } from 'discord.js'
 
 @Command({
-  name: 'ping',
-  description: 'Test the bot connection!',
+  name: 'register',
+  description: 'Register a camper to the discord',
 })
 @Injectable()
-export class PingCommand implements DiscordCommand {
+export class RegisterCommand implements DiscordCommand {
   handler(interaction: CommandInteraction): string {
     return `Pong ${interaction.user.username}!`
   }

@@ -5,6 +5,7 @@ export function configuration() {
       token: process.env.DISCORD_TOKEN ?? 'discord_token',
     },
     database: {
+      name: process.env.DATABASE_NAME ?? 'discord',
       host: process.env.DATABASE_HOST ?? 'localhost',
       port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
       username: process.env.DATABASE_USERNAME ?? 'postgres',

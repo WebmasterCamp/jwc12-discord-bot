@@ -15,6 +15,8 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module'
       load: [configuration],
     }),
     DiscordModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         token: config.get('discord.token'),
         discordClientOptions: {
