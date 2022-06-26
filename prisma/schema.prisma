@@ -11,27 +11,62 @@ datasource db {
 }
 
 model Camper {
-  id        String   @id @default(uuid())
+  id        String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   email      String @unique
-  discordId  String
-  firebaseId String
+  camperId   String @unique
+  discordId  String @unique
+  firebaseId String @unique
+
+  firstName   String
+  firstNameEn String
+  lastName    String
+  lastNameEn  String
+  nickname    String
+  telephone   String
+  branch      BranchType
+  points      Int        @default(0)
+
+  emergencyFirstName    String
+  emergencyLastName     String
+  emergencyTelephone    String
+  emergencyRelationship String
+
+  parentFirstName    String
+  parentLastName     String
+  parentTelephone    String
+  parentRelationship String
+
+  healthAllergicDrug       String?
+  healthAllergicThing      String?
+  healthCongenitalDisease  String?
+  healthDietaryRestriction String?
+  healthDrug               String?
 
   Team   Team?   @relation(fields: [teamId], references: [id])
-  teamId String?
+  teamId String? @db.Uuid
+
+  @@id([id, discordId, firebaseId, camperId])
 }
 
-model UnregisteredCamper {
+model AllowedCamper {
   firebaseId String @id
 }
 
 model Team {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   name    String
   campers Camper[]
+}
+
+enum BranchType {
+  PROGRAMMING
+  MARKETING
+  CONTENT
+  DESIGN
 }

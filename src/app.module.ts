@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 
-import { DiscordModule } from '@discord-nestjs/core'
+import { DiscordModule, registerFilterGlobally } from '@discord-nestjs/core'
 import { Intents } from 'discord.js'
 
 import { AppController } from './app.controller'
