@@ -2,7 +2,7 @@ export function configuration() {
   return {
     port: process.env.PORT || 3000,
     discord: {
-      token: '',
+      token: process.env.DISCORD_TOKEN ?? 'discord_token',
     },
     database: {
       host: process.env.DATABASE_HOST ?? 'localhost',

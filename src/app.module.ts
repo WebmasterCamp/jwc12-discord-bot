@@ -7,7 +7,6 @@ import { Intents } from 'discord.js'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { configuration } from './config/configuration'
-import { DiscordBotSlashCommands } from './discord-bot/commands/commands.module'
 import { DiscordBotModule } from './discord-bot/discord-bot.module'
 
 @Module({
@@ -24,8 +23,6 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module'
       }),
     }),
     DiscordBotModule,
-    DiscordBotSlashCommands,
-    ConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],
