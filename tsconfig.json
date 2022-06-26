@@ -11,7 +11,8 @@
     "importHelpers": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["ES2020", "ES2017", "esnext.asynciterable"],
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": "src"
   },
   "exclude": [
     "node_modules",
