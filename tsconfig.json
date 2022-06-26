@@ -1,25 +1,21 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2019",
-    "noImplicitAny": false,
-    "sourceMap": true,
-    "outDir": "build",
+    "declaration": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "declaration": true,
-    "importHelpers": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2020", "ES2017", "esnext.asynciterable"],
-    "moduleResolution": "node",
-    "baseUrl": "src"
-  },
-  "exclude": [
-    "node_modules",
-    "tests",
-    "examples",
-    "guides",
-    "**/*.spec.ts",
-    "starter-projects"
-  ]
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
+  }
 }
