@@ -44,14 +44,19 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0'
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
 
       - name: Install dependencies
         run: yarn --frozen-lockfile --prefer-offline
 
-      - name: Install dependencies
+      - name: Generate Prisma Client
         run: yarn prisma:generate
+        env:
+          DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
+
+      - name: Migrate Database
+        run: yarn prisma:deploy
         env:
           DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
 
