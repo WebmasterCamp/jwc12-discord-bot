@@ -60,8 +60,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
 
-      - name: Build Application
-        run: yarn build
+      - name: Build Application and Deploy
+        run: yarn build && yarn deploy
         env:
           PORT: ${{ secrets.PORT }}
           DOMAIN: ${{ secrets.DOMAIN }}
@@ -73,9 +73,3 @@ jobs:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
           DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-
-      - name: Deploy
-        run: yarn build
-
-      - name: After Deployed
-        run: '${{ steps.deploy.outputs.url }}'
