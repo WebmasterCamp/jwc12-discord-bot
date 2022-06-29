@@ -30,6 +30,11 @@ model Camper {
   branch      BranchType?
   points      Int?        @default(0)
 
+  province        String?
+  shirtSize       String?
+  educationLevel  String?
+  educationSchool String?
+
   emergencyFirstName    String?
   emergencyLastName     String?
   emergencyTelephone    String?
