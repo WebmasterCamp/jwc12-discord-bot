@@ -2,7 +2,22 @@ name: Deploy to GAE
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  actions: read
+  checks: write
+  contents: write
+  deployments: read
+  issues: write
+  discussions: read
+  packages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: read
+  statuses: write
+
 jobs:
   deploy:
     name: Deploying to Google App Engine
