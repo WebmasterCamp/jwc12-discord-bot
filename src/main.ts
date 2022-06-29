@@ -19,4 +19,5 @@ async function bootstrap() {
   const logger = new Logger('Main')
   logger.log(`Application is running on port ${port}`)
 }
+
 bootstrap()

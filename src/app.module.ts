@@ -13,15 +13,27 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module'
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
+      isGlobal: true,
     }),
     DiscordModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+
       useFactory: (config: ConfigService) => ({
         token: config.get('discord.token'),
         discordClientOptions: {
-          intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+          intents: [
+            Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_MEMBERS,
+          ],
         },
+        registerCommandOptions: [
+          {
+            forGuild: '748542488645730305',
+            removeCommandsBefore: true,
+          },
+        ],
       }),
     }),
     DiscordBotModule,

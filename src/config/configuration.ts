@@ -14,5 +14,10 @@ export function configuration() {
       username: process.env.DATABASE_USERNAME ?? 'postgres',
       password: process.env.DATABASE_PASSWORD ?? 'postgres',
     },
+    google: {
+      projectId: process.env.GOOGLE_PROJECT_ID ?? 'google_project_id',
+      clientEmail: process.env.GOOGLE_CLIENT_EMAIL ?? 'google_client_email',
+      privateKey: process.env.GOOGLE_PRIVATE_KEY ?? 'google_private_key',
+    },
   }
 }

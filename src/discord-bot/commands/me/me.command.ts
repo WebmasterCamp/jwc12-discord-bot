@@ -17,7 +17,9 @@ import { PrismaService } from 'src/prisma.service'
 export class MeCommand implements DiscordCommand {
   private readonly logger = new Logger(MeCommand.name)
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {
+    this.logger.log('MeCommand initialized')
+  }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
     const camperInfo = await this.prisma.camper.findUnique({
@@ -38,7 +40,6 @@ export class MeCommand implements DiscordCommand {
         { name: 'รหัส', value: camperInfo.camperId, inline: true },
         { name: 'เบอร์โทรศัพท์', value: camperInfo.telephone, inline: true },
         { name: 'คะแนน', value: camperInfo.points.toString(), inline: true },
-        camperInfo.Team && { name: 'ทีม', value: camperInfo.Team.name, inline: true },
       ].filter((item) => !!item)
 
       const camperInfoEmbed = new MessageEmbed()
