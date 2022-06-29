@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 
-import { PrismaService } from '@app/prisma.service'
+import { PrismaService } from 'src/prisma.service'
 
 import { MeCommand } from './me/me.command'
 import { PingCommand } from './ping/ping.command'

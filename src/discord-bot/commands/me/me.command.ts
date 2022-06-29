@@ -1,4 +1,4 @@
-import { Injectable, Logger, UseFilters } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 
 import { Command, DiscordCommand } from '@discord-nestjs/core'
 import {
@@ -7,8 +7,7 @@ import {
   InteractionReplyOptions,
   MessageEmbed,
 } from 'discord.js'
-
-import { PrismaService } from '@app/prisma.service'
+import { PrismaService } from 'src/prisma.service'
 
 @Command({
   name: 'me',

@@ -17,9 +17,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "useDefineForClassFields": true,
-    "paths": {
-      "@app/*": ["src/*"]
-    }
-  }
+    "useDefineForClassFields": true
+  },
+  "include": ["src/**/*.ts", "dist/**/*.ts"]
 }
