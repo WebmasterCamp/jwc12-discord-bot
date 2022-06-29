@@ -27,19 +27,6 @@ jobs:
       matrix:
         node-version: [16.x]
 
-    env:
-      PORT: ${{ env.PORT }}
-      DOMAIN: ${{ env.DOMAIN }}
-      DATABASE_HOST: ${{ env.DATABASE_HOST }}
-      DATABASE_PORT: ${{ env.DATABASE_PORT }}
-      DATABASE_USERNAME: ${{ env.DATABASE_USERNAME }}
-      DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-      DATABASE_NAME: ${{ env.DATABASE_NAME }}
-      DATABASE_URL: postgresql://${{ env.DATABASE_USERNAME }}:${{ env.DATABASE_PASSWORD }}@${{ env.DATABASE_HOST }}:${{ env.DATABASE_PORT}}/${{ env.DATABASE_NAME }}
-      DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
-      DISCORD_CLIENT_ID: ${{ env.DISCORD_CLIENT_ID }}
-      DISCORD_CLIENT_SECRET: ${{ env.DISCORD_CLIENT_SECRET }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -52,7 +39,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - id: 'auth'
+      - id: auth
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
@@ -65,11 +52,22 @@ jobs:
 
       - name: Install dependencies
         run: yarn prisma:generate
+        env:
+          DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
 
       - name: Build Application
         run: yarn build
         env:
-          STAGING: ${{ env.STAGING }}
+          PORT: ${{ secrets.PORT }}
+          DOMAIN: ${{ secrets.DOMAIN }}
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
 
       - name: Deploy
         run: yarn build
