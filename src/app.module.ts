@@ -30,7 +30,13 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module'
         },
         registerCommandOptions: [
           {
+            // TEST SERVER
             forGuild: '748542488645730305',
+            removeCommandsBefore: true,
+          },
+          {
+            // PRODUCTION SERVER - JWC12
+            forGuild: '990970125119291432',
             removeCommandsBefore: true,
           },
         ],
