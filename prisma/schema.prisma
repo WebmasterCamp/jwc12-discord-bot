@@ -11,14 +11,14 @@ datasource db {
 }
 
 model Camper {
-  id        String   @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email      String @unique
-  camperId   String @unique
-  discordId  String @unique
-  firebaseId String @unique
+  email      String? @unique
+  camperId   String? @unique
+  discordId  String? @unique
+  firebaseId String? @unique
 
   firstName   String
   firstNameEn String
@@ -47,8 +47,6 @@ model Camper {
 
   Team   Team?   @relation(fields: [teamId], references: [id])
   teamId String? @db.Uuid
-
-  @@id([id, discordId, firebaseId, camperId])
 }
 
 model AllowedCamper {
