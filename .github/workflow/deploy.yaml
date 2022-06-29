@@ -1,0 +1,63 @@
+name: Deploy to GAE
+
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    name: Deploying to Google App Engine
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    env:
+      PORT: ${{ env.PORT }}
+      DOMAIN: ${{ env.DOMAIN }}
+      DATABASE_HOST: ${{ env.DATABASE_HOST }}
+      DATABASE_PORT: ${{ env.DATABASE_PORT }}
+      DATABASE_USERNAME: ${{ env.DATABASE_USERNAME }}
+      DATABASE_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+      DATABASE_NAME: ${{ env.DATABASE_NAME }}
+      DATABASE_URL: postgresql://${{ env.DATABASE_USERNAME }}:${{ env.DATABASE_PASSWORD }}@${{ env.DATABASE_HOST }}:${{ env.DATABASE_PORT}}/${{ env.DATABASE_NAME }}
+      DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
+      DISCORD_CLIENT_ID: ${{ env.DISCORD_CLIENT_ID }}
+      DISCORD_CLIENT_SECRET: ${{ env.DISCORD_CLIENT_SECRET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cahce node_modules
+        uses: c-hive/gha-yarn-cache@v2
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile --prefer-offline
+
+      - name: Install dependencies
+        run: yarn prisma:generate
+
+      - name: Build Application
+        run: yarn build
+        env:
+          STAGING: ${{ env.STAGING }}
+
+      - name: Deploy
+        run: yarn build
+
+      - name: After Deployed
+        run: '${{ steps.deploy.outputs.url }}'
