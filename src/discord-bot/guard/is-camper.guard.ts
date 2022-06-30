@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common'
+import { Inject, Logger } from '@nestjs/common'
 
 import { DiscordGuard, EventArgs } from '@discord-nestjs/core'
 import { ClientEvents } from 'discord.js'
@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma.service'
 
 export class IsCamperInteractionGuard implements DiscordGuard {
   private readonly logger = new Logger(IsCamperInteractionGuard.name)
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async canActive(
     event: keyof ClientEvents,
@@ -17,13 +17,13 @@ export class IsCamperInteractionGuard implements DiscordGuard {
       where: { guildId: interaction.guild.id },
     })
 
-    if (!metadata || !metadata.camperRole) {
+    if (!metadata) {
       this.logger.error(
         "Guild doesn't have metadata or camperRole. Please set it up by using /role"
       )
       return false
     }
 
-    return event === 'interactionCreate'
+    return event === 'interactionCreate' && !!metadata?.camperRole
   }
 }

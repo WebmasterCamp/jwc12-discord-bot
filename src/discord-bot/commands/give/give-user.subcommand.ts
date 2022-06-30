@@ -1,29 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { Command, DiscordCommand } from '@discord-nestjs/core'
+import { DiscordCommand, SubCommand } from '@discord-nestjs/core'
 import { CommandInteraction, InteractionReplyOptions } from 'discord.js'
 import { PrismaService } from 'src/prisma.service'
 
-@Command({
-  name: 'point',
-  description: 'ตรวจสอบยอดบุญคงเหลือ',
+@SubCommand({
+  name: 'user',
+  description: 'เพิ่มลดแต้มบุญ',
 })
 @Injectable()
-export class PointCommand implements DiscordCommand {
-  private readonly logger = new Logger(PointCommand.name)
+export class GiveUserSubCommand implements DiscordCommand {
+  private readonly logger = new Logger(GiveUserSubCommand.name)
 
   constructor(private prisma: PrismaService) {
-    this.logger.log(`${PointCommand.name} initialized`)
+    this.logger.log(`${GiveUserSubCommand.name} initialized`)
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
     const camperInfo = await this.prisma.camper.findFirst({
-      select: { points: true },
+      select: { coins: true },
       where: {
         discordAccounts: {
-          some: {
-            discordId: interaction.user.id,
-          },
+          some: { discordId: interaction.user.id },
         },
       },
     })
@@ -35,7 +33,7 @@ export class PointCommand implements DiscordCommand {
 
     try {
       return {
-        content: `คุณมีแต้มบุญอยู่ที่ ${camperInfo.points}`,
+        content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${camperInfo.coins} แต้มบุญ`,
       }
     } catch (err) {
       this.logger.error(err)

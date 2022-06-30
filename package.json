@@ -27,6 +27,7 @@
     "deploy": "gcloud app deploy"
   },
   "dependencies": {
+    "@discord-nestjs/common": "^3.3.5",
     "@discord-nestjs/core": "^3.4.0",
     "@google-cloud/firestore": "^5.0.2",
     "@nestjs/common": "^8.0.0",

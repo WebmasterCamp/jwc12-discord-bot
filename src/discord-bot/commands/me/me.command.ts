@@ -45,7 +45,7 @@ export class MeCommand implements DiscordCommand {
         { name: 'ชื่อเล่น', value: camperInfo.nickname, inline: true },
         { name: 'รหัส', value: camperInfo.camperCode, inline: true },
         { name: 'เบอร์โทรศัพท์', value: camperInfo.telephone, inline: true },
-        { name: 'คะแนน', value: camperInfo.points.toString(), inline: true },
+        { name: 'คะแนน', value: camperInfo.coins.toString(), inline: true },
       ].filter((item) => !!item)
 
       const camperInfoEmbed = new MessageEmbed()
