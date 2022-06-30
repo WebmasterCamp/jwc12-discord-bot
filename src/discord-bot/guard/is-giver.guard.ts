@@ -14,7 +14,7 @@ export class IsGiverInteractionGuard implements DiscordGuard {
   ): Promise<boolean> {
     const metadata = await this.prisma.guildMetadata.findUnique({
       select: { giverRole: true, adminRole: true },
-      where: { guildId: interaction.guild.id },
+      where: { guildId: interaction.guildId },
     })
 
     if (!metadata) {
@@ -22,6 +22,13 @@ export class IsGiverInteractionGuard implements DiscordGuard {
       return false
     }
 
-    return event === 'interactionCreate' && (!!metadata?.giverRole || !!metadata?.adminRole)
+    if (!metadata?.giverRole && !metadata?.adminRole) {
+      this.logger.error(
+        'Guild metadata does not have giverRole or adminRole. Please set it up by using /role'
+      )
+      return false
+    }
+
+    return event === 'interactionCreate'
   }
 }

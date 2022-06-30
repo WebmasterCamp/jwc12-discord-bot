@@ -126,11 +126,11 @@ model GuildMetadata {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  giverRole  String?
-  staffRole  String?
-  camperRole String?
-  adminRole  String?
-
+  giverRole      String?
+  staffRole      String?
+  camperRole     String?
+  adminRole      String?
+  loggingChannel String?
 }
 
 enum BranchType {

@@ -1,47 +1,53 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { Command, DiscordCommand } from '@discord-nestjs/core'
-import { CommandInteraction, InteractionReplyOptions } from 'discord.js'
+import { TransformPipe } from '@discord-nestjs/common'
+import {
+  Command,
+  DiscordTransformedCommand,
+  Payload,
+  TransformedCommandExecutionContext,
+  UseGuards,
+  UsePipes,
+} from '@discord-nestjs/core'
+import { InteractionReplyOptions } from 'discord.js'
+import { IsAdminInteractionGuard } from 'src/discord-bot/guard/is-admin.guard'
 import { PrismaService } from 'src/prisma.service'
+
+import { LoggerDto } from './logger.dto'
 
 @Command({
   name: 'logger',
   description: 'Assign logger to channel',
 })
 @Injectable()
-export class LoggerCommand implements DiscordCommand {
+@UsePipes(TransformPipe)
+@UseGuards(IsAdminInteractionGuard)
+export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
   private readonly logger = new Logger(LoggerCommand.name)
 
   constructor(private prisma: PrismaService) {
     this.logger.log(`${LoggerCommand.name} initialized`)
   }
 
-  async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
-    // const camperInfo = await this.prisma.camper.findFirst({
-    //   select: { coins: true },
-    //   where: {
-    //     discordAccounts: {
-    //       some: { discordId: interaction.user.id },
-    //     },
-    //   },
-    // })
-
-    // if (!camperInfo) {
-    //   this.logger.error(`User ${interaction.user.id} is not registered`)
-    //   return { content: 'หาข้อมูลของคุณไม่พบ' }
-    // }
-
-    // try {
-    //   return {
-    //     content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${camperInfo.coins} แต้มบุญ`,
-    //   }
-    // } catch (err) {
-    //   this.logger.error(err)
-    //   return { content: 'มีบางอย่างผิดพลาด' }
-    // }
-
-    return {
-      content: 'logger',
+  async handler(
+    @Payload() dto: LoggerDto,
+    { interaction }: TransformedCommandExecutionContext
+  ): Promise<InteractionReplyOptions> {
+    try {
+      await this.prisma.guildMetadata.upsert({
+        where: { guildId: interaction.guildId },
+        update: { loggingChannel: dto.channel },
+        create: { guildId: interaction.guildId, loggingChannel: dto.channel },
+      })
+      return {
+        content: `ตั้งค่าการแจ้งเตือนไปที่ <#${dto.channel}>`,
+        ephemeral: true,
+      }
+    } catch (err) {
+      return {
+        content: `มีข้อผิดพลาด ${err.message}`,
+        ephemeral: true,
+      }
     }
   }
 }

@@ -30,17 +30,17 @@ export class GiveCamperSubCommand implements DiscordTransformedCommand<GiveCampe
   }
 
   async handler(
-    @Payload() { amount, user }: GiveCamperDTO,
+    @Payload() dto: GiveCamperDTO,
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
     try {
-      const amountInt = parseInt(amount)
+      const amountInt = parseInt(dto.amount)
       const camper = await this.prisma.discordAccount.findFirst({
         select: {
           discordId: true,
           Camper: { select: { id: true, coins: true } },
         },
-        where: { discordId: user },
+        where: { discordId: dto.user },
       })
 
       const newCoins = camper.Camper.coins + amountInt
@@ -51,7 +51,7 @@ export class GiveCamperSubCommand implements DiscordTransformedCommand<GiveCampe
       })
 
       return {
-        content: `<@${interaction.user.id}> แจกแต้มบุญให้น้อง <@${user}> เป็นมูลค่า ${amount} แต้มบุญ`,
+        content: `<@${interaction.user.id}> แจกแต้มบุญให้น้อง <@${dto.user}> เป็นมูลค่า ${dto.amount} แต้มบุญ`,
       }
     } catch (err) {
       this.logger.error(err)

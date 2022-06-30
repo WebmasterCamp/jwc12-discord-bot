@@ -58,7 +58,6 @@ export class GiveAllSubCommand implements DiscordTransformedCommand<GiveAllDTO> 
       })
 
       const mention = metadata?.camperRole ? `<@&${metadata.camperRole}>` : 'น้อง ๆ ทุกคน'
-
       return {
         content: `${mention} รับไปเลยคนละ ${amount} แต้มบุญ❗️ โดยพี่ <@${interaction.user.id}>`,
       }

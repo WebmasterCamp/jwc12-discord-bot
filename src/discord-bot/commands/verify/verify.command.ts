@@ -23,6 +23,7 @@ import {
 import { TextInputStyles } from 'discord.js/typings/enums'
 import { IsModalInteractionGuard } from 'src/discord-bot/guard'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
+import { notifyLogging } from 'src/discord-bot/utils/logging'
 import { createCamperRoleOptions, findOrCreateRole } from 'src/discord-bot/utils/role'
 import { PrismaService } from 'src/prisma.service'
 
@@ -98,6 +99,7 @@ export class VerifyCommand implements DiscordCommand {
 
     if (account) {
       this.logger.error(`User ${interaction.user.id} is already registered`)
+      await notifyLogging(this.prisma, interaction, `<@${interaction.user.id}> ยืนยันตัวซ้ำ`)
       return {
         content: 'คุณได้ยืนยันตัวตนไปแล้ว',
         ephemeral: true,
@@ -134,6 +136,7 @@ export class VerifyCommand implements DiscordCommand {
     const verifyCode = modal.fields.getTextInputValue(VERIFY_CODE_ID)
 
     if (verifyCode.length !== 6) {
+      await notifyLogging(this.prisma, modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
       await modal.reply({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง', ephemeral: true })
       return
     }
