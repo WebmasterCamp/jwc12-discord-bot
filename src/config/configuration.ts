@@ -6,6 +6,7 @@ export function configuration() {
       token: process.env.DISCORD_TOKEN ?? 'discord_token',
       clientId: process.env.DISCORD_CLIENT_ID ?? 'discord_client_id',
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? 'discord_client_secret',
+      guilds: process.env.DISCORD_GUILDS ?? '990970125119291432',
     },
     database: {
       name: process.env.DATABASE_NAME ?? 'discord',
