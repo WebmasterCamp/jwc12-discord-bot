@@ -17,7 +17,6 @@ model Camper {
 
   email      String? @unique
   camperId   String? @unique
-  discordId  String? @unique
   firebaseId String? @unique
   citizenId  String? @unique
 
@@ -51,8 +50,15 @@ model Camper {
   healthDietaryRestriction String?
   healthDrug               String?
 
-  Team   Team?   @relation(fields: [teamId], references: [id])
-  teamId String? @db.Uuid
+  Team            Team?            @relation(fields: [teamId], references: [id])
+  teamId          String?          @db.Uuid
+  discordAccounts DiscordAccount[]
+}
+
+model DiscordAccount {
+  discordId String @id
+  camper    Camper @relation(fields: [camperId], references: [id])
+  camperId  String @db.Uuid
 }
 
 model Team {

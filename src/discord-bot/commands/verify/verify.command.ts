@@ -24,7 +24,7 @@ export class VerifyCommand implements DiscordCommand {
     this.logger.log(`${VerifyCommand.name} initialized`)
   }
 
-  async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
+  async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions | void> {
     const modal = new Modal().setTitle('Request participation').setCustomId('modal')
 
     const userNameInputComponent = new TextInputComponent()
@@ -54,14 +54,5 @@ export class VerifyCommand implements DiscordCommand {
     //   this.logger.error(`User ${interaction.user.id} is not registered`)
     //   return { content: 'หาข้อมูลของคุณไม่พบ' }
     // }
-
-    try {
-      return {
-        content: 'HAHAAAHAHHA',
-      }
-    } catch (err) {
-      this.logger.error(err)
-      return { content: 'มีบางอย่างผิดพลาด' }
-    }
   }
 }

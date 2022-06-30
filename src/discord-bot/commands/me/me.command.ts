@@ -22,9 +22,15 @@ export class MeCommand implements DiscordCommand {
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
-    const camperInfo = await this.prisma.camper.findUnique({
+    const camperInfo = await this.prisma.camper.findFirst({
       include: { Team: true },
-      where: { discordId: interaction.user.id },
+      where: {
+        discordAccounts: {
+          some: {
+            discordId: interaction.user.id,
+          },
+        },
+      },
     })
 
     if (!camperInfo) {

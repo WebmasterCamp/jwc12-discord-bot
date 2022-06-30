@@ -17,9 +17,15 @@ export class PointCommand implements DiscordCommand {
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
-    const camperInfo = await this.prisma.camper.findUnique({
+    const camperInfo = await this.prisma.camper.findFirst({
       select: { points: true },
-      where: { discordId: interaction.user.id },
+      where: {
+        discordAccounts: {
+          some: {
+            discordId: interaction.user.id,
+          },
+        },
+      },
     })
 
     if (!camperInfo) {
