@@ -16,7 +16,7 @@ model Camper {
   updatedAt DateTime @default(now()) @updatedAt
 
   email      String? @unique
-  camperId   String? @unique
+  camperCode String? @unique
   firebaseId String? @unique
   citizenId  String? @unique
 
@@ -27,7 +27,7 @@ model Camper {
   nickname    String?
   telephone   String?
   branch      BranchType?
-  points      Int?        @default(0)
+  points      Int         @default(0)
 
   province        String?
   shirtSize       String?
@@ -50,15 +50,20 @@ model Camper {
   healthDietaryRestriction String?
   healthDrug               String?
 
-  Team            Team?            @relation(fields: [teamId], references: [id])
-  teamId          String?          @db.Uuid
-  discordAccounts DiscordAccount[]
+  Team                Team?                 @relation(fields: [teamId], references: [id])
+  teamId              String?               @db.Uuid
+  discordAccounts     DiscordAccount[]
+  CoreQuestion        CoreQuestion[]
+  ProgrammingQuestion ProgrammingQuestion[]
+  ContentQuestion     ContentQuestion[]
+  DesignQuestion      DesignQuestion[]
+  MarketingQuestion   MarketingQuestion[]
 }
 
 model DiscordAccount {
   discordId String @id
-  camper    Camper @relation(fields: [camperId], references: [id])
   camperId  String @db.Uuid
+  Camper    Camper @relation(fields: [camperId], references: [id])
 }
 
 model Team {
@@ -68,6 +73,52 @@ model Team {
 
   name    String
   campers Camper[]
+}
+
+model CoreQuestion {
+  camper   Camper @relation(fields: [camperId], references: [id])
+  camperId String @id @db.Uuid
+
+  question1 String?
+  question2 String?
+  question3 String?
+  question4 String?
+}
+
+model ProgrammingQuestion {
+  camper   Camper @relation(fields: [camperId], references: [id])
+  camperId String @id @db.Uuid
+
+  question1 String?
+  question2 String?
+}
+
+model ContentQuestion {
+  camper   Camper @relation(fields: [camperId], references: [id])
+  camperId String @id @db.Uuid
+
+  question1 String?
+  question2 String?
+  question3 String?
+}
+
+model DesignQuestion {
+  camper   Camper @relation(fields: [camperId], references: [id])
+  camperId String @id @db.Uuid
+
+  question1 String?
+  question2 String?
+  question3 String?
+}
+
+model MarketingQuestion {
+  camper   Camper @relation(fields: [camperId], references: [id])
+  camperId String @id @db.Uuid
+
+  question1 String?
+  question2 String?
+  question3 String?
+  question4 String?
 }
 
 enum BranchType {
