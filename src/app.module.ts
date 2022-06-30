@@ -41,10 +41,11 @@ export class AppModule {}
 type RegisterCommandOptions = DiscordModuleOption['registerCommandOptions'][number]
 
 function getRegisterCommandOptions(config: ConfigService): RegisterCommandOptions[] {
-  const guildsString = config.get('discord.guilds') as string
+  const guildsString = config.get<string>('discord.guilds')
   const guilds = guildsString.split(',')
   const options: RegisterCommandOptions[] = guilds.map((guild) => ({
     forGuild: guild,
+    removeCommandsBefore: config.get<boolean>('production'),
   }))
   return options
 }

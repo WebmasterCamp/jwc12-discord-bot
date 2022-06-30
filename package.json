@@ -11,7 +11,7 @@
     "build": "nest build",
     "gcp-build": "yarn build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "node ./dist/main.js",
+    "start": "NODE_ENV=production node ./dist/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

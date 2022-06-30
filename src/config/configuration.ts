@@ -2,6 +2,7 @@ export function configuration() {
   return {
     port: process.env.PORT || 3000,
     domain: process.env.DOMAIN || 'localhost',
+    production: process.env.NODE_ENV === 'production',
     discord: {
       token: process.env.DISCORD_TOKEN ?? 'discord_token',
       clientId: process.env.DISCORD_CLIENT_ID ?? 'discord_client_id',

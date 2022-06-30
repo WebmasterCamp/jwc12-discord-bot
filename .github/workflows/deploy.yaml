@@ -50,16 +50,6 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile --prefer-offline
 
-      - name: Generate Prisma Client
-        run: yarn prisma:generate
-        env:
-          DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
-
-      - name: Migrate Database
-        run: yarn prisma:deploy
-        env:
-          DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
-
       - name: Make envfile
         uses: SpicyPizza/create-envfile@v1.3
         with:
@@ -73,20 +63,15 @@ jobs:
           envkey_DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           envkey_DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
           envkey_DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+          envkey_DISCORD_GUILDS: ${{ secrets.DISCORD_GUILDS }}
           envkey_DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
           file_name: .env
 
+      - name: Generate Prisma Client
+        run: yarn prisma:generate
+
+      - name: Migrate Database
+        run: yarn prisma:deploy
+
       - name: Build Application and Deploy
         run: yarn build && yarn deploy
-        env:
-          PORT: ${{ secrets.PORT }}
-          DOMAIN: ${{ secrets.DOMAIN }}
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-          DATABASE_URL: postgresql://${{ secrets.DATABASE_USERNAME }}:${{ secrets.DATABASE_PASSWORD }}@${{ secrets.DATABASE_HOST }}:${{ secrets.DATABASE_PORT}}/${{ secrets.DATABASE_NAME }}
