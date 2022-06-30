@@ -11,6 +11,7 @@ import {
 import {
   ButtonInteraction,
   CommandInteraction,
+  Interaction,
   InteractionReplyOptions,
   MessageActionRow,
   MessageButton,
@@ -21,7 +22,8 @@ import {
 } from 'discord.js'
 import { TextInputStyles } from 'discord.js/typings/enums'
 import { IsModalInteractionGuard } from 'src/discord-bot/guard'
-import { capitalize } from 'src/discord-bot/utils'
+import { capitalize } from 'src/discord-bot/utils/capitialize'
+import { createCamperRoleOptions, findOrCreateRole } from 'src/discord-bot/utils/role'
 import { PrismaService } from 'src/prisma.service'
 
 const VERIFY_BUTTON_ID = 'verifyButton'
@@ -38,10 +40,7 @@ class VerifyInteractionCollector {
 
   @On('collect')
   async onCollect(interaction: ButtonInteraction): Promise<void> {
-    console.log('BEFORE COLLECT INTERACTION', interaction)
     if (interaction.customId !== VERIFY_BUTTON_ID) return
-
-    console.log('AFTER COLLECT INTERACTION')
 
     const modal = new Modal().setTitle('ยืนยันตัวตน').setCustomId(VERIFY_MODAL_ID)
 
@@ -61,7 +60,7 @@ class VerifyInteractionCollector {
 
 @Command({
   name: 'verify',
-  description: 'Verify camper',
+  description: 'ยืนยันตัวตนน้องค่าย',
 })
 @UseCollectors(VerifyInteractionCollector)
 @Injectable()
@@ -70,6 +69,25 @@ export class VerifyCommand implements DiscordCommand {
 
   constructor(private prisma: PrismaService) {
     this.logger.log(`${VerifyCommand.name} initialized`)
+  }
+
+  async assignRoleToCamper(interaction: Interaction) {
+    const guild = await interaction.guild.fetch()
+    const userId = interaction.user.id
+
+    const metadata = await this.prisma.guildMetadata.findUnique({
+      where: { guildId: guild.id },
+    })
+
+    const camperRoleOption = createCamperRoleOptions()
+    const camperRole = await findOrCreateRole(interaction, camperRoleOption, metadata?.camperRole)
+    await guild.members.cache.get(userId).roles.add(camperRole)
+
+    await this.prisma.guildMetadata.upsert({
+      where: { guildId: guild.id },
+      create: { guildId: guild.id, camperRole: camperRole.id },
+      update: { camperRole: camperRole.id },
+    })
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions | void> {
@@ -89,7 +107,7 @@ export class VerifyCommand implements DiscordCommand {
     const linkButton = new MessageButton()
       .setStyle('LINK')
       .setLabel('รับรหัสยืนยันตัวตน')
-      .setURL('https://google.com')
+      .setURL('https://12.jwc.in.th/discord')
 
     const openModalButton = new MessageButton()
       .setCustomId(VERIFY_BUTTON_ID)
@@ -114,8 +132,6 @@ export class VerifyCommand implements DiscordCommand {
     if (modal.customId !== VERIFY_MODAL_ID) return
 
     const verifyCode = modal.fields.getTextInputValue(VERIFY_CODE_ID)
-
-    console.log(verifyCode)
 
     if (verifyCode.length !== 6) {
       await modal.reply({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง', ephemeral: true })
@@ -142,6 +158,7 @@ export class VerifyCommand implements DiscordCommand {
         },
         where: { id: camper.id },
       })
+      await this.assignRoleToCamper(modal)
       await modal.reply({
         content: `🎉 ยินดีต้อนรับ น้อง ${camper.nickname} จากสาขา ${capitalize(camper.branch)}`,
         components: [],

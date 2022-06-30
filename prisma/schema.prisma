@@ -27,7 +27,7 @@ model Camper {
   nickname    String?
   telephone   String?
   branch      BranchType?
-  points      Int         @default(0)
+  coins       Int         @default(0)
 
   province        String?
   shirtSize       String?
@@ -119,6 +119,18 @@ model MarketingQuestion {
   question2 String?
   question3 String?
   question4 String?
+}
+
+model GuildMetadata {
+  guildId   String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  giverRole  String?
+  staffRole  String?
+  camperRole String?
+  adminRole  String?
+
 }
 
 enum BranchType {
