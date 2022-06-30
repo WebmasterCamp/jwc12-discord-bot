@@ -43,7 +43,7 @@ export class MeCommand implements DiscordCommand {
         { name: 'ชื่อจริง', value: camperInfo.firstName, inline: true },
         { name: 'นามกสุล', value: camperInfo.lastName, inline: true },
         { name: 'ชื่อเล่น', value: camperInfo.nickname, inline: true },
-        { name: 'รหัส', value: camperInfo.camperId, inline: true },
+        { name: 'รหัส', value: camperInfo.camperCode, inline: true },
         { name: 'เบอร์โทรศัพท์', value: camperInfo.telephone, inline: true },
         { name: 'คะแนน', value: camperInfo.points.toString(), inline: true },
       ].filter((item) => !!item)

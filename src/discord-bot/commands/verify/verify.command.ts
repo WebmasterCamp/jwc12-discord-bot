@@ -1,10 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { Command, DiscordCommand, On, UseGuards } from '@discord-nestjs/core'
 import {
+  Command,
+  DiscordCommand,
+  InteractionEventCollector,
+  On,
+  UseCollectors,
+  UseGuards,
+} from '@discord-nestjs/core'
+import {
+  ButtonInteraction,
   CommandInteraction,
   InteractionReplyOptions,
   MessageActionRow,
+  MessageButton,
   Modal,
   ModalActionRowComponent,
   ModalSubmitInteraction,
@@ -15,35 +24,29 @@ import { IsModalInteractionGuard } from 'src/discord-bot/guard'
 import { capitalize } from 'src/discord-bot/utils'
 import { PrismaService } from 'src/prisma.service'
 
-@Command({
-  name: 'verify',
-  description: 'Verify camper',
-})
-@Injectable()
-export class VerifyCommand implements DiscordCommand {
-  private readonly logger = new Logger(VerifyCommand.name)
-  private readonly verifyModalId = 'Verify'
-  private readonly verifyCodeComponentId = 'VerifyCode'
+const VERIFY_BUTTON_ID = 'verifyButton'
+const VERIFY_MODAL_ID = 'verifyModal'
+const VERIFY_CODE_ID = 'verifyCode'
+
+@InteractionEventCollector({ time: 15000 })
+class VerifyInteractionCollector {
+  private readonly logger = new Logger(VerifyInteractionCollector.name)
 
   constructor(private prisma: PrismaService) {
-    this.logger.log(`${VerifyCommand.name} initialized`)
+    this.logger.log(`${VerifyInteractionCollector.name} initialized`)
   }
 
-  async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions | void> {
-    const account = await this.prisma.discordAccount.findUnique({
-      select: { discordId: true },
-      where: {
-        discordId: interaction.user.id,
-      },
-    })
-    if (account) {
-      this.logger.error(`User ${interaction.user.id} is already registered`)
-      return { content: 'คุณได้ยืนยันตัวตนไปแล้ว', ephemeral: true }
-    }
-    const modal = new Modal().setTitle('ยืนยันตัวตน').setCustomId(this.verifyModalId)
+  @On('collect')
+  async onCollect(interaction: ButtonInteraction): Promise<void> {
+    console.log('BEFORE COLLECT INTERACTION', interaction)
+    if (interaction.customId !== VERIFY_BUTTON_ID) return
+
+    console.log('AFTER COLLECT INTERACTION')
+
+    const modal = new Modal().setTitle('ยืนยันตัวตน').setCustomId(VERIFY_MODAL_ID)
 
     const verifyCodeInputComponent = new TextInputComponent()
-      .setCustomId(this.verifyCodeComponentId)
+      .setCustomId(VERIFY_CODE_ID)
       .setLabel('รหัสยืนยันตัวตน')
       .setStyle(TextInputStyles.SHORT)
 
@@ -52,8 +55,55 @@ export class VerifyCommand implements DiscordCommand {
     )
 
     modal.addComponents(...rows)
-
     await interaction.showModal(modal)
+  }
+}
+
+@Command({
+  name: 'verify',
+  description: 'Verify camper',
+})
+@UseCollectors(VerifyInteractionCollector)
+@Injectable()
+export class VerifyCommand implements DiscordCommand {
+  private readonly logger = new Logger(VerifyCommand.name)
+
+  constructor(private prisma: PrismaService) {
+    this.logger.log(`${VerifyCommand.name} initialized`)
+  }
+
+  async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions | void> {
+    const account = await this.prisma.discordAccount.findUnique({
+      select: { discordId: true },
+      where: { discordId: interaction.user.id },
+    })
+
+    if (account) {
+      this.logger.error(`User ${interaction.user.id} is already registered`)
+      return {
+        content: 'คุณได้ยืนยันตัวตนไปแล้ว',
+        ephemeral: true,
+      }
+    }
+
+    const linkButton = new MessageButton()
+      .setStyle('LINK')
+      .setLabel('รับรหัสยืนยันตัวตน')
+      .setURL('https://google.com')
+
+    const openModalButton = new MessageButton()
+      .setCustomId(VERIFY_BUTTON_ID)
+      .setStyle('PRIMARY')
+      .setLabel('ยืนยันตัวตน')
+
+    const row = new MessageActionRow().addComponents(linkButton, openModalButton)
+
+    return {
+      content:
+        '🌈 ยินดีต้อนรับเข้าสู่ค่าย JWC12 อย่างเป็นทางการ! เพื่อยืนยันว่าคุณคือน้องค่ายของเราจริง ๆ รบกวนกรอกรหัสยืนยันตัวตนตามลิงก์ที่ให้ไปให้ถูกต้องด้วยนะ~',
+      components: [row],
+      ephemeral: true,
+    }
   }
 
   @On('interactionCreate')
@@ -61,9 +111,12 @@ export class VerifyCommand implements DiscordCommand {
   async onModuleSubmit(modal: ModalSubmitInteraction) {
     this.logger.log(`Modal ${modal.customId} submit`)
 
-    if (modal.customId !== this.verifyModalId) return
+    if (modal.customId !== VERIFY_MODAL_ID) return
 
-    const verifyCode = modal.fields.getTextInputValue(this.verifyCodeComponentId)
+    const verifyCode = modal.fields.getTextInputValue(VERIFY_CODE_ID)
+
+    console.log(verifyCode)
+
     if (verifyCode.length !== 6) {
       await modal.reply({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง', ephemeral: true })
       return
@@ -72,9 +125,7 @@ export class VerifyCommand implements DiscordCommand {
     const camper = await this.prisma.camper.findFirst({
       select: { id: true, nickname: true, branch: true },
       where: {
-        firebaseId: {
-          startsWith: verifyCode,
-        },
+        firebaseId: { startsWith: verifyCode },
       },
     })
     if (camper === null) {
@@ -82,21 +133,25 @@ export class VerifyCommand implements DiscordCommand {
       return
     }
 
-    await this.prisma.camper.update({
-      data: {
-        discordAccounts: {
-          create: {
-            discordId: modal.user.id,
+    try {
+      await this.prisma.camper.update({
+        data: {
+          discordAccounts: {
+            create: { discordId: modal.user.id },
           },
         },
-      },
-      where: {
-        id: camper.id,
-      },
-    })
-    await modal.reply({
-      content: `ยินดีต้อนรับ น้อง${camper.nickname} สาขา ${capitalize(camper.branch)}`,
-      ephemeral: true,
-    })
+        where: { id: camper.id },
+      })
+      await modal.reply({
+        content: `🎉 ยินดีต้อนรับ น้อง ${camper.nickname} จากสาขา ${capitalize(camper.branch)}`,
+        components: [],
+      })
+    } catch (err) {
+      this.logger.error(err)
+      await modal.update({
+        content: `มีบางอย่างผิดพลาด โปรดลองอีกครั้ง`,
+        components: [],
+      })
+    }
   }
 }
