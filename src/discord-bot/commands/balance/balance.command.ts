@@ -29,7 +29,6 @@ export class BalanceCommand implements DiscordCommand {
     try {
       return {
         content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${coins} แต้มบุญ`,
-        ephemeral: true,
       }
     } catch (err) {
       this.logger.error(err)
