@@ -1,13 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import {
-  Command,
-  DiscordCommand,
-  InteractionEventCollector,
-  On,
-  UseCollectors,
-  UseGuards,
-} from '@discord-nestjs/core'
+import { Command, DiscordCommand, On } from '@discord-nestjs/core'
 import {
   ButtonInteraction,
   CommandInteraction,
@@ -22,7 +15,6 @@ import {
 } from 'discord.js'
 import { TextInputStyles } from 'discord.js/typings/enums'
 import { CamperRepository } from 'src/camper/camper.repository'
-import { IsModalInteractionGuard } from 'src/discord-bot/guard'
 import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
 import { createCamperRoleOptions, findOrCreateRole } from 'src/discord-bot/utils/role'
@@ -32,39 +24,10 @@ const VERIFY_BUTTON_ID = 'verifyButton'
 const VERIFY_MODAL_ID = 'verifyModal'
 const VERIFY_CODE_ID = 'verifyCode'
 
-@InteractionEventCollector({ time: 15000 })
-class VerifyInteractionCollector {
-  private readonly logger = new Logger(VerifyInteractionCollector.name)
-
-  constructor() {
-    this.logger.log(`${VerifyInteractionCollector.name} initialized`)
-  }
-
-  @On('collect')
-  async onCollect(interaction: ButtonInteraction): Promise<void> {
-    if (interaction.customId !== VERIFY_BUTTON_ID) return
-
-    const modal = new Modal().setTitle('ยืนยันตัวตน').setCustomId(VERIFY_MODAL_ID)
-
-    const verifyCodeInputComponent = new TextInputComponent()
-      .setCustomId(VERIFY_CODE_ID)
-      .setLabel('รหัสยืนยันตัวตน')
-      .setStyle(TextInputStyles.SHORT)
-
-    const rows = [verifyCodeInputComponent].map((component) =>
-      new MessageActionRow<ModalActionRowComponent>().addComponents(component)
-    )
-
-    modal.addComponents(...rows)
-    await interaction.showModal(modal)
-  }
-}
-
 @Command({
   name: 'verify',
   description: 'ยืนยันตัวตนน้องค่าย',
 })
-@UseCollectors(VerifyInteractionCollector)
 @Injectable()
 export class VerifyCommand implements DiscordCommand {
   private readonly logger = new Logger(VerifyCommand.name)
@@ -129,12 +92,31 @@ export class VerifyCommand implements DiscordCommand {
   }
 
   @On('interactionCreate')
-  @UseGuards(IsModalInteractionGuard)
-  async onModuleSubmit(modal: ModalSubmitInteraction) {
-    this.logger.log(`Modal ${modal.customId} submit`)
+  async onInteractionCreate(interaction: Interaction) {
+    if (interaction.isModalSubmit() && interaction.customId === VERIFY_MODAL_ID) {
+      await this.onVerifyModalSubmit(interaction)
+    } else if (interaction.isButton() && interaction.customId === VERIFY_BUTTON_ID) {
+      await this.onVerifyButtonClick(interaction)
+    }
+  }
 
-    if (modal.customId !== VERIFY_MODAL_ID) return
+  private async onVerifyButtonClick(interaction: ButtonInteraction) {
+    const modal = new Modal().setTitle('ยืนยันตัวตน').setCustomId(VERIFY_MODAL_ID)
 
+    const verifyCodeInputComponent = new TextInputComponent()
+      .setCustomId(VERIFY_CODE_ID)
+      .setLabel('รหัสยืนยันตัวตน')
+      .setStyle(TextInputStyles.SHORT)
+
+    const rows = [verifyCodeInputComponent].map((component) =>
+      new MessageActionRow<ModalActionRowComponent>().addComponents(component)
+    )
+
+    modal.addComponents(...rows)
+    await interaction.showModal(modal)
+  }
+
+  private async onVerifyModalSubmit(modal: ModalSubmitInteraction) {
     const verifyCode = modal.fields.getTextInputValue(VERIFY_CODE_ID)
 
     if (verifyCode.length !== 6) {
