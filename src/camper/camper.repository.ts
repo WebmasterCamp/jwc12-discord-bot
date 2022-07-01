@@ -95,4 +95,26 @@ export class CamperRepository {
       where: { id: camperId },
     })
   }
+
+  async getTopCoinsIndividual() {
+    return await this.prisma.camper.findMany({
+      select: { nickname: true, branch: true, coins: true },
+      orderBy: { coins: 'desc' },
+      take: 6,
+    })
+  }
+
+  async getTopCoinsBranch() {
+    return await this.prisma.camper.groupBy({
+      by: ['branch'],
+      _sum: {
+        coins: true,
+      },
+      orderBy: {
+        _sum: {
+          coins: 'desc',
+        },
+      },
+    })
+  }
 }

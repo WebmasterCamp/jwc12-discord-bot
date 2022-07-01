@@ -53,12 +53,12 @@ export class ViewBalanceCommand implements DiscordTransformedCommand<ViewBalance
 
     if (target.type === 'role') {
       return {
-        content: `${target.formatted} มีแต้มบุญรวม ${Formatters.bold(totalAmount)} แต้มบุญ`,
+        content: `${target.formatted} มีแต้มบุญรวม ${Formatters.bold(totalAmount)} แต้ม`,
         ephemeral: true,
       }
     } else {
       return {
-        content: `${target.formatted} มีแต้มบุญ ${Formatters.bold(totalAmount)} แต้มบุญ`,
+        content: `${target.formatted} มีแต้มบุญ ${Formatters.bold(totalAmount)} แต้ม`,
         ephemeral: true,
       }
     }

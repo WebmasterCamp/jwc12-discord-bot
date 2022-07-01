@@ -30,7 +30,7 @@ export class BalanceCommand implements DiscordCommand {
     const coins = await this.campers.getCoinsById(camperId)
 
     return {
-      content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${coins} แต้มบุญ`,
+      content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${coins} แต้ม`,
     }
   }
 }

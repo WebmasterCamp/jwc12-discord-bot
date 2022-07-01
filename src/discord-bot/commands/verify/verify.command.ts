@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { Command, DiscordCommand, On } from '@discord-nestjs/core'
-import { BranchType } from '@prisma/client'
 import {
   ButtonInteraction,
   CommandInteraction,
@@ -19,6 +18,7 @@ import { TextInputStyles } from 'discord.js/typings/enums'
 import { CamperRepository } from 'src/camper/camper.repository'
 import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
+import { branchAbbreviations } from 'src/discord-bot/utils/constants'
 import { GuildService } from 'src/guild/guild.service'
 
 const VERIFY_BUTTON_ID = 'verifyButton'
@@ -152,11 +152,4 @@ export class VerifyCommand implements DiscordCommand {
       })
     }
   }
-}
-
-const branchAbbreviations: Record<BranchType, string> = {
-  CONTENT: 'CT',
-  DESIGN: 'DS',
-  MARKETING: 'MK',
-  PROGRAMMING: 'PG',
 }
