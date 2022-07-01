@@ -23,8 +23,8 @@ import {
 import { TextInputStyles } from 'discord.js/typings/enums'
 import { CamperRepository } from 'src/camper/camper.repository'
 import { IsModalInteractionGuard } from 'src/discord-bot/guard'
+import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
-import { notifyLogging } from 'src/discord-bot/utils/logging'
 import { createCamperRoleOptions, findOrCreateRole } from 'src/discord-bot/utils/role'
 import { PrismaService } from 'src/prisma/prisma.service'
 
@@ -36,7 +36,7 @@ const VERIFY_CODE_ID = 'verifyCode'
 class VerifyInteractionCollector {
   private readonly logger = new Logger(VerifyInteractionCollector.name)
 
-  constructor(private prisma: PrismaService) {
+  constructor() {
     this.logger.log(`${VerifyInteractionCollector.name} initialized`)
   }
 
@@ -69,7 +69,11 @@ class VerifyInteractionCollector {
 export class VerifyCommand implements DiscordCommand {
   private readonly logger = new Logger(VerifyCommand.name)
 
-  constructor(private prisma: PrismaService, private campers: CamperRepository) {
+  constructor(
+    private prisma: PrismaService,
+    private campers: CamperRepository,
+    private botLogger: BotLogger
+  ) {
     this.logger.log(`${VerifyCommand.name} initialized`)
   }
 
@@ -97,7 +101,7 @@ export class VerifyCommand implements DiscordCommand {
 
     if (camperId) {
       this.logger.error(`User ${interaction.user.id} is already registered`)
-      await notifyLogging(this.prisma, interaction, `<@${interaction.user.id}> ยืนยันตัวซ้ำ`)
+      await this.botLogger.log(interaction, `<@${interaction.user.id}> ยืนยันตัวซ้ำ`)
       return {
         content: 'คุณได้ยืนยันตัวตนไปแล้ว',
         ephemeral: true,
@@ -134,14 +138,14 @@ export class VerifyCommand implements DiscordCommand {
     const verifyCode = modal.fields.getTextInputValue(VERIFY_CODE_ID)
 
     if (verifyCode.length !== 6) {
-      await notifyLogging(this.prisma, modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
+      await this.botLogger.log(modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
       await modal.update({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง' })
       return
     }
 
     const camper = await this.campers.findByVerifyCode(verifyCode)
     if (camper === null) {
-      await notifyLogging(this.prisma, modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
+      await this.botLogger.log(modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
       await modal.update({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง' })
       return
     }

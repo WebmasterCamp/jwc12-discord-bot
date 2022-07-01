@@ -6,6 +6,14 @@ import { PrismaService } from 'src/prisma/prisma.service'
 export class GuildService {
   constructor(private prisma: PrismaService) {}
 
+  async getGuildMetadata(guildId: string) {
+    return await this.prisma.guildMetadata.upsert({
+      where: { guildId: guildId },
+      update: {},
+      create: { guildId },
+    })
+  }
+
   async setLoggerChannel(guildId: string, channelId: string) {
     await this.prisma.guildMetadata.upsert({
       where: { guildId: guildId },

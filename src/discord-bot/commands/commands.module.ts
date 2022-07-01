@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common'
+import { Module, forwardRef } from '@nestjs/common'
 
 import { ReflectMetadataProvider } from '@discord-nestjs/core'
 import { CamperModule } from 'src/camper/camper.module'
 import { GuildModule } from 'src/guild/guild.module'
 import { PrismaModule } from 'src/prisma/prisma.module'
 
+import { DiscordBotModule } from '../discord-bot.module'
 import { BalanceCommand } from './balance/balance.command'
 import { GiveCommand } from './give/give.command'
 import { LoggerCommand } from './logger/logger.command'
@@ -16,7 +17,7 @@ import { RoleCommand } from './role/role.command'
 import { VerifyCommand } from './verify/verify.command'
 
 @Module({
-  imports: [PrismaModule, CamperModule, GuildModule],
+  imports: [forwardRef(() => DiscordBotModule), PrismaModule, CamperModule, GuildModule],
   providers: [
     ReflectMetadataProvider,
     PingCommand,
