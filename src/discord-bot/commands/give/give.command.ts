@@ -10,9 +10,9 @@ import {
   UsePipes,
 } from '@discord-nestjs/core'
 import { Guild, InteractionReplyOptions } from 'discord.js'
+import { CamperRepository } from 'src/camper/camper.repository'
 import { IsGiverInteractionGuard } from 'src/discord-bot/guard/is-giver.guard'
 import { Mention, parseMention } from 'src/discord-bot/utils/mention'
-import { PrismaService } from 'src/prisma/prisma.service'
 
 import { GiveDTO } from './give.dto'
 
@@ -26,7 +26,7 @@ import { GiveDTO } from './give.dto'
 export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
   private readonly logger = new Logger(GiveCommand.name)
 
-  constructor(private prisma: PrismaService) {
+  constructor(private campers: CamperRepository) {
     this.logger.log(`${GiveCommand.name} initialized`)
   }
 
@@ -50,18 +50,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
         }
       }
       const amount = parseInt(dto.amount)
-      await this.prisma.camper.updateMany({
-        where: {
-          id: {
-            in: ids,
-          },
-        },
-        data: {
-          coins: {
-            increment: amount,
-          },
-        },
-      })
+      await this.campers.incrementCoinByIds(ids, amount)
 
       if (target.type === 'role') {
         return {
@@ -84,40 +73,15 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
   private async getCamperIds(mention: Mention, guild: Guild): Promise<string[] | null> {
     switch (mention.type) {
       case 'user':
-        const camper = await this.prisma.discordAccount.findUnique({
-          select: { Camper: { select: { id: true } } },
-          where: { discordId: mention.userId },
-        })
-        if (!camper) return null
-        return [camper.Camper.id]
+        const camperId = await this.campers.getIdByDiscordId(mention.userId)
+        return camperId ? [camperId] : null
       case 'role':
-        return this.getCamperIdsWithRole(mention.roleId, guild)
+        const role = await guild.roles.fetch(mention.roleId)
+        if (!role) return null
+        const memberIds = role.members.map((member) => member.id)
+        return await this.campers.getIdsByDiscordIds(memberIds)
       default:
         return null
     }
-  }
-
-  private async getCamperIdsWithRole(roleId: string, guild: Guild): Promise<string[] | null> {
-    const role = await guild.roles.fetch(roleId)
-    if (!role) return null
-
-    const memberIds = role.members.map((member) => member.id)
-    const accounts = await this.prisma.discordAccount.findMany({
-      select: { camperId: true },
-      where: {
-        discordId: {
-          in: memberIds,
-        },
-      },
-    })
-    const campers = await this.prisma.camper.findMany({
-      select: { id: true },
-      where: {
-        id: {
-          in: accounts.map((account) => account.camperId),
-        },
-      },
-    })
-    return campers.map((camper) => camper.id)
   }
 }
