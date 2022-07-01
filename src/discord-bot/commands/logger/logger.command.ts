@@ -42,7 +42,6 @@ export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
       await this.guildService.setLoggerChannel(interaction.guildId, dto.channel)
       return {
         content: `ตั้งค่าการแจ้งเตือนไปที่ ${channelMention.formatted}`,
-        ephemeral: true,
       }
     } catch (err) {
       return {
