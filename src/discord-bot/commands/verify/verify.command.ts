@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { Command, DiscordCommand, On } from '@discord-nestjs/core'
+import { BranchType } from '@prisma/client'
 import {
   ButtonInteraction,
   CommandInteraction,
@@ -116,6 +117,10 @@ export class VerifyCommand implements DiscordCommand {
       await this.campers.associateToDiscordId(camper.id, modal.user.id)
       await this.guildService.assignRoleToId(modal.guild, 'CAMPER', modal.user.id)
       await this.guildService.assignRoleToId(modal.guild, camper.branch, modal.user.id)
+      const branchAbbr = branchAbbreviations[camper.branch]
+      await modal.guild.members.edit(modal.user.id, {
+        nick: `[${branchAbbr}] ${camper.nickname} JWC12`,
+      })
       await modal.update({
         content: `ยืนยันตัวตนสำเร็จ`,
         components: [],
@@ -132,4 +137,11 @@ export class VerifyCommand implements DiscordCommand {
       })
     }
   }
+}
+
+const branchAbbreviations: Record<BranchType, string> = {
+  CONTENT: 'CT',
+  DESIGN: 'DS',
+  MARKETING: 'MK',
+  PROGRAMMING: 'PG',
 }
