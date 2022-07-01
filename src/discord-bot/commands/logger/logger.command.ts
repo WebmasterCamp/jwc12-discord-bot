@@ -11,7 +11,7 @@ import {
 } from '@discord-nestjs/core'
 import { InteractionReplyOptions } from 'discord.js'
 import { IsAdminInteractionGuard } from 'src/discord-bot/guard/is-admin.guard'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 import { LoggerDto } from './logger.dto'
 

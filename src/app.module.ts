@@ -8,6 +8,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { configuration } from './config/configuration'
 import { DiscordBotModule } from './discord-bot/discord-bot.module'
+import { PrismaModule } from './prisma/prisma.module'
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DiscordBotModule } from './discord-bot/discord-bot.module'
       }),
     }),
     DiscordBotModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

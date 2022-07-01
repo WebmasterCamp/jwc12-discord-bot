@@ -25,7 +25,7 @@ import { IsModalInteractionGuard } from 'src/discord-bot/guard'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
 import { notifyLogging } from 'src/discord-bot/utils/logging'
 import { createCamperRoleOptions, findOrCreateRole } from 'src/discord-bot/utils/role'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 const VERIFY_BUTTON_ID = 'verifyButton'
 const VERIFY_MODAL_ID = 'verifyModal'

@@ -1,6 +1,5 @@
 import { BranchType } from '@prisma/client'
 import { ColorResolvable, CreateRoleOptions, Interaction, Permissions, Role } from 'discord.js'
-import { PrismaService } from 'src/prisma.service'
 
 export const RoleName = {
   CAMPER: 'Camper',

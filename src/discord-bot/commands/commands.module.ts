@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { ReflectMetadataProvider } from '@discord-nestjs/core'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaModule } from 'src/prisma/prisma.module'
 
 import { BalanceCommand } from './balance/balance.command'
 import { GiveCommand } from './give/give.command'
@@ -14,9 +14,9 @@ import { RoleCommand } from './role/role.command'
 import { VerifyCommand } from './verify/verify.command'
 
 @Module({
+  imports: [PrismaModule],
   providers: [
     ReflectMetadataProvider,
-    PrismaService,
     PingCommand,
     MeCommand,
     VerifyCommand,

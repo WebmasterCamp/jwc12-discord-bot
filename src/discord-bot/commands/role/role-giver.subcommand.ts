@@ -12,7 +12,7 @@ import {
 import { Interaction, InteractionReplyOptions } from 'discord.js'
 import { IsGiverInteractionGuard } from 'src/discord-bot/guard/is-giver.guard'
 import { createGiverRoleOption, findOrCreateRole } from 'src/discord-bot/utils/role'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 import { RoleDto } from './role.dto'
 

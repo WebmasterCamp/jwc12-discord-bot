@@ -2,7 +2,7 @@ import { Inject, Logger } from '@nestjs/common'
 
 import { DiscordGuard, EventArgs } from '@discord-nestjs/core'
 import { ClientEvents } from 'discord.js'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 export class IsCamperInteractionGuard implements DiscordGuard {
   private readonly logger = new Logger(IsCamperInteractionGuard.name)

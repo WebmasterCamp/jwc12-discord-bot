@@ -1,5 +1,5 @@
 import { Interaction, TextChannel } from 'discord.js'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 export async function notifyLogging(
   prisma: PrismaService,

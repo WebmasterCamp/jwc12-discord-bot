@@ -7,7 +7,7 @@ import {
   InteractionReplyOptions,
   MessageEmbed,
 } from 'discord.js'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 @Command({
   name: 'me',

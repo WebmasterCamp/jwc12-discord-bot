@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { Command, DiscordCommand } from '@discord-nestjs/core'
 import { CommandInteraction, InteractionReplyOptions } from 'discord.js'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 @Command({
   name: 'balance',

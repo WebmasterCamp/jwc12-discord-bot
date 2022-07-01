@@ -12,7 +12,7 @@ import {
 import { Guild, InteractionReplyOptions } from 'discord.js'
 import { IsGiverInteractionGuard } from 'src/discord-bot/guard/is-giver.guard'
 import { Mention, parseMention } from 'src/discord-bot/utils/mention'
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'src/prisma/prisma.service'
 
 import { GiveDTO } from './give.dto'
 
