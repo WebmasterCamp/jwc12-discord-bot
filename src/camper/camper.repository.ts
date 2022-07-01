@@ -50,6 +50,21 @@ export class CamperRepository {
     return camper.coins
   }
 
+  async transferCoin(fromId: string, toId: string, amount: number) {
+    await this.prisma.$transaction([
+      this.prisma.camper.update({
+        select: { coins: true },
+        where: { id: fromId },
+        data: { coins: { decrement: amount } },
+      }),
+      this.prisma.camper.update({
+        select: { coins: true },
+        where: { id: toId },
+        data: { coins: { increment: amount } },
+      }),
+    ])
+  }
+
   async findByVerifyCode(verifyCode: string) {
     const camper = await this.prisma.camper.findFirst({
       select: { id: true, nickname: true, branch: true },

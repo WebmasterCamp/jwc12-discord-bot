@@ -7,6 +7,7 @@ import { PrismaModule } from 'src/prisma/prisma.module'
 
 import { DiscordBotModule } from '../discord-bot.module'
 import { BalanceCommand } from './balance/balance.command'
+import { GiveCommand } from './give/give.command'
 import { GrantCommand } from './grant/grant.command.ts'
 import { LoggerCommand } from './logger/logger.command'
 import { MeCommand } from './me/me.command'
@@ -19,12 +20,12 @@ import { VerifyCommand } from './verify/verify.command'
   imports: [forwardRef(() => DiscordBotModule), PrismaModule, CamperModule, GuildModule],
   providers: [
     ReflectMetadataProvider,
-
     PingCommand,
     MeCommand,
     VerifyCommand,
     LoggerCommand,
     BalanceCommand,
+    GiveCommand,
     GrantCommand,
     SetupCommand,
     StaffCommand,
