@@ -9,9 +9,8 @@ import {
   UseFilters,
   UsePipes,
 } from '@discord-nestjs/core'
-import { InteractionReplyOptions } from 'discord.js'
+import { Formatters, InteractionReplyOptions } from 'discord.js'
 import { BotLogger } from 'src/discord-bot/logger/bot-logger'
-import { parseMention } from 'src/discord-bot/utils/mention'
 import { GuildService } from 'src/guild/guild.service'
 
 import { CommandErrorFilter } from '../error-filter'
@@ -35,20 +34,12 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
     @Payload() dto: StaffDTO,
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
-    const userMention = parseMention(dto.user)
-    if (!userMention || userMention.type !== 'user') {
-      return {
-        content: `โปรดระบุ user`,
-        ephemeral: true,
-      }
-    }
-
-    await this.guildService.assignRoleToId(interaction.guild, 'STAFF', userMention.userId)
-    await interaction.guild.members.edit(userMention.userId, {
-      nick: `${dto.nickname} ${dto.gen}`,
+    await this.guildService.assignRoleToId(interaction.guild, 'STAFF', dto.user)
+    await interaction.guild.members.edit(dto.user, {
+      nick: `Staff - ${dto.nickname}`,
     })
     return {
-      content: `ให้ role staff กับ ${userMention.formatted} แล้ว`,
+      content: `ให้ role staff กับ ${Formatters.userMention(dto.user)} แล้ว`,
       ephemeral: true,
     }
   }

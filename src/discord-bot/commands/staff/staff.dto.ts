@@ -1,7 +1,8 @@
-import { Param } from '@discord-nestjs/core'
+import { Param, ParamType } from '@discord-nestjs/core'
 
 export class StaffDTO {
   @Param({
+    type: ParamType.USER,
     name: 'user',
     description: 'ระบุชื่อผู้ใช้',
     required: true,
@@ -14,11 +15,4 @@ export class StaffDTO {
     required: true,
   })
   nickname: string
-
-  @Param({
-    name: 'gen',
-    description: 'รุ่น เช่น JWC11, YWC18',
-    required: true,
-  })
-  gen: string
 }
