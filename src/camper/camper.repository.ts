@@ -25,6 +25,15 @@ export class CamperRepository {
     return accounts.map((account) => account.camperId)
   }
 
+  async getByDiscordId(discordId: string) {
+    const account = await this.prisma.discordAccount.findUnique({
+      include: { Camper: { include: { Team: true } } },
+      where: { discordId },
+    })
+    if (!account) return null
+    return account.Camper
+  }
+
   async incrementCoinByIds(camperIds: string[], amount: number) {
     await this.prisma.camper.updateMany({
       where: { id: { in: camperIds } },

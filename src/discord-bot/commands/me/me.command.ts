@@ -7,7 +7,7 @@ import {
   InteractionReplyOptions,
   MessageEmbed,
 } from 'discord.js'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { CamperRepository } from 'src/camper/camper.repository'
 
 @Command({
   name: 'me',
@@ -17,21 +17,12 @@ import { PrismaService } from 'src/prisma/prisma.service'
 export class MeCommand implements DiscordCommand {
   private readonly logger = new Logger(MeCommand.name)
 
-  constructor(private prisma: PrismaService) {
+  constructor(private campers: CamperRepository) {
     this.logger.log('MeCommand initialized')
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions> {
-    const camperInfo = await this.prisma.camper.findFirst({
-      include: { Team: true },
-      where: {
-        discordAccounts: {
-          some: {
-            discordId: interaction.user.id,
-          },
-        },
-      },
-    })
+    const camperInfo = await this.campers.getByDiscordId(interaction.user.id)
 
     if (!camperInfo) {
       this.logger.error(`User ${interaction.user.id} is not registered`)
