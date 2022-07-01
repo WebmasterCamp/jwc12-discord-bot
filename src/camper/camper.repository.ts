@@ -40,4 +40,27 @@ export class CamperRepository {
     })
     return camper.coins
   }
+
+  async findByVerifyCode(verifyCode: string) {
+    const camper = await this.prisma.camper.findFirst({
+      select: { id: true, nickname: true, branch: true },
+      where: {
+        firebaseId: {
+          startsWith: verifyCode,
+        },
+      },
+    })
+    return camper ?? null
+  }
+
+  async associateToDiscordId(camperId: string, discordId: string) {
+    await this.prisma.camper.update({
+      data: {
+        discordAccounts: {
+          create: { discordId: discordId },
+        },
+      },
+      where: { id: camperId },
+    })
+  }
 }

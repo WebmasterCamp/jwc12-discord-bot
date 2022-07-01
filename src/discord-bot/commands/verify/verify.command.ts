@@ -21,6 +21,7 @@ import {
   TextInputComponent,
 } from 'discord.js'
 import { TextInputStyles } from 'discord.js/typings/enums'
+import { CamperRepository } from 'src/camper/camper.repository'
 import { IsModalInteractionGuard } from 'src/discord-bot/guard'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
 import { notifyLogging } from 'src/discord-bot/utils/logging'
@@ -68,7 +69,7 @@ class VerifyInteractionCollector {
 export class VerifyCommand implements DiscordCommand {
   private readonly logger = new Logger(VerifyCommand.name)
 
-  constructor(private prisma: PrismaService) {
+  constructor(private prisma: PrismaService, private campers: CamperRepository) {
     this.logger.log(`${VerifyCommand.name} initialized`)
   }
 
@@ -92,12 +93,9 @@ export class VerifyCommand implements DiscordCommand {
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions | void> {
-    const account = await this.prisma.discordAccount.findUnique({
-      select: { discordId: true },
-      where: { discordId: interaction.user.id },
-    })
+    const camperId = await this.campers.getIdByDiscordId(interaction.user.id)
 
-    if (account) {
+    if (camperId) {
       this.logger.error(`User ${interaction.user.id} is already registered`)
       await notifyLogging(this.prisma, interaction, `<@${interaction.user.id}> ยืนยันตัวซ้ำ`)
       return {
@@ -141,12 +139,7 @@ export class VerifyCommand implements DiscordCommand {
       return
     }
 
-    const camper = await this.prisma.camper.findFirst({
-      select: { id: true, nickname: true, branch: true },
-      where: {
-        firebaseId: { startsWith: verifyCode },
-      },
-    })
+    const camper = await this.campers.findByVerifyCode(verifyCode)
     if (camper === null) {
       await notifyLogging(this.prisma, modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
       await modal.update({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง' })
@@ -154,14 +147,7 @@ export class VerifyCommand implements DiscordCommand {
     }
 
     try {
-      await this.prisma.camper.update({
-        data: {
-          discordAccounts: {
-            create: { discordId: modal.user.id },
-          },
-        },
-        where: { id: camper.id },
-      })
+      await this.campers.associateToDiscordId(camper.id, modal.user.id)
       await this.assignRoleToCamper(modal)
       await modal.update({
         content: `ยืนยันตัวตนสำเร็จ`,
