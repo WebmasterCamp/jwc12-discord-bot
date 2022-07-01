@@ -26,7 +26,7 @@ export class MeCommand implements DiscordCommand {
 
     if (!camperInfo) {
       this.logger.error(`User ${interaction.user.id} is not registered`)
-      return { content: 'หาข้อมูลของคุณไม่พบ' }
+      return { content: 'หาข้อมูลของคุณไม่พบ', ephemeral: true }
     }
 
     try {
