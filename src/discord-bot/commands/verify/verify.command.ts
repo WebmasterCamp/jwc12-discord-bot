@@ -146,6 +146,7 @@ export class VerifyCommand implements DiscordCommand {
       })
     } catch (err) {
       this.logger.error(err)
+      await this.botLogger.logError(modal, 'Verify fail', err)
       await modal.update({
         content: `มีบางอย่างผิดพลาด โปรดลองอีกครั้ง`,
         components: [],
