@@ -16,7 +16,7 @@ export class RankIndividualSubCommand implements DiscordCommand {
     await interaction.reply({
       content: `อันดับแต้มบุญรายบุคคล\n${ranks
         .map((rank, index) => {
-          const nameAndBranch = `${branchAbbreviations[rank.branch]} ${rank.nickname}`
+          const nameAndBranch = `[${branchAbbreviations[rank.branch]}] ${rank.nickname}`
           return `${index + 1}. ${nameAndBranch} - ${rank.coins} แต้ม`
         })
         .join('\n')}`,
