@@ -29,6 +29,7 @@ model Camper {
   telephone   String?
   branch      BranchType?
   coins       Int         @default(0)
+  birthDate   String?
 
   province        String?
   shirtSize       String?
