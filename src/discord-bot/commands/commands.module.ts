@@ -4,8 +4,6 @@ import { ReflectMetadataProvider } from '@discord-nestjs/core'
 import { PrismaService } from 'src/prisma.service'
 
 import { BalanceCommand } from './balance/balance.command'
-import { GiveAllSubCommand } from './give/give-all.subcommand'
-import { GiveCamperSubCommand } from './give/give-camper.subcommand'
 import { GiveCommand } from './give/give.command'
 import { LoggerCommand } from './logger/logger.command'
 import { MeCommand } from './me/me.command'
@@ -28,8 +26,6 @@ import { VerifyCommand } from './verify/verify.command'
     RoleGiverSubCommand,
     RoleAdminSubCommand,
     GiveCommand,
-    GiveAllSubCommand,
-    GiveCamperSubCommand,
   ],
 })
 export class DiscordBotSlashCommands {}

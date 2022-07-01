@@ -1,23 +1,12 @@
 import { Param } from '@discord-nestjs/core'
-import { Transform } from 'class-transformer'
 
-export class GiveAllDTO {
+export class GiveDTO {
   @Param({
-    name: 'amount',
-    description: 'แต้มบุญที่จะให้',
+    name: 'target',
+    description: 'ระบุชื่อผู้ใช้ หรือ role @',
     required: true,
   })
-  amount: string
-}
-
-export class GiveCamperDTO {
-  @Transform(({ value }) => value.slice(3).slice(0, -1))
-  @Param({
-    name: 'user',
-    description: 'ระบุชื่อผู้ใช้ @',
-    required: true,
-  })
-  user: string
+  target: string
 
   @Param({
     name: 'amount',
