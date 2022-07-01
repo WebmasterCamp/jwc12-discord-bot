@@ -73,11 +73,10 @@ export const findOrCreateRole = async (
   roleConfig: CreateRoleOptions,
   roleId?: string | null
 ): Promise<Role> => {
-  let role: Role
   const guild = await interaction.guild.fetch()
+  let role = guild.roles.cache.get(roleId)
 
-  if (guild.roles.cache.some((role) => role.id === roleId)) {
-    role = guild.roles.cache.find((role) => role.id === roleId)
+  if (role) {
     role.setPermissions(roleConfig.permissions)
   } else {
     role = await guild.roles.create(roleConfig)

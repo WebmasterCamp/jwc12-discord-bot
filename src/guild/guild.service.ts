@@ -29,7 +29,7 @@ export class GuildService {
       where: { guildId_roleKey: { guildId: guild.id, roleKey: roleKey } },
     })
     if (guildRole) {
-      return guild.roles.cache.find((role) => role.id === guildRole.roleId)
+      return guild.roles.cache.get(guildRole.roleId)
     }
 
     const roleOptions = roles[roleKey]

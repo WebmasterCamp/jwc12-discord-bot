@@ -40,7 +40,10 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
       }
     }
 
+    let debug = false
+    debug = true
     try {
+      if (debug) throw new Error('test')
       await this.guildService.assignRoleToId(interaction.guild, 'STAFF', userMention.userId)
       await interaction.guild.members.edit(userMention.userId, {
         nick: `${dto.nickname} ${dto.gen}`,
