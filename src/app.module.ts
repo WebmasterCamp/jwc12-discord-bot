@@ -9,6 +9,7 @@ import { AppService } from './app.service'
 import { CamperModule } from './camper/camper.module'
 import { configuration } from './config/configuration'
 import { DiscordBotModule } from './discord-bot/discord-bot.module'
+import { GuildModule } from './guild/guild.module'
 import { PrismaModule } from './prisma/prisma.module'
 
 @Module({
@@ -36,6 +37,7 @@ import { PrismaModule } from './prisma/prisma.module'
     DiscordBotModule,
     PrismaModule,
     CamperModule,
+    GuildModule,
   ],
   controllers: [AppController],
   providers: [AppService],

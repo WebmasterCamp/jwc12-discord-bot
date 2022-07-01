@@ -11,7 +11,8 @@ import {
 } from '@discord-nestjs/core'
 import { InteractionReplyOptions } from 'discord.js'
 import { IsAdminInteractionGuard } from 'src/discord-bot/guard/is-admin.guard'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { parseMention } from 'src/discord-bot/utils/mention'
+import { GuildService } from 'src/guild/guild.service'
 
 import { LoggerDto } from './logger.dto'
 
@@ -25,7 +26,7 @@ import { LoggerDto } from './logger.dto'
 export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
   private readonly logger = new Logger(LoggerCommand.name)
 
-  constructor(private prisma: PrismaService) {
+  constructor(private guildService: GuildService) {
     this.logger.log(`${LoggerCommand.name} initialized`)
   }
 
@@ -34,13 +35,16 @@ export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
     try {
-      await this.prisma.guildMetadata.upsert({
-        where: { guildId: interaction.guildId },
-        update: { loggingChannel: dto.channel },
-        create: { guildId: interaction.guildId, loggingChannel: dto.channel },
-      })
+      const channelMention = parseMention(dto.channel)
+      if (!channelMention || channelMention.type !== 'channel') {
+        return {
+          content: `โปรดระบุ channel`,
+          ephemeral: true,
+        }
+      }
+      await this.guildService.setLoggerChannel(interaction.guildId, dto.channel)
       return {
-        content: `ตั้งค่าการแจ้งเตือนไปที่ <#${dto.channel}>`,
+        content: `ตั้งค่าการแจ้งเตือนไปที่ ${channelMention.formatted}`,
         ephemeral: true,
       }
     } catch (err) {

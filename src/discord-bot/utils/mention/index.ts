@@ -2,8 +2,15 @@ import { Mention } from './types'
 
 export * from './types'
 
-export function parseMention(rawValue: string): Mention | null {
-  let mention = rawValue
+export function parseMention(formatted: string): Mention | null {
+  let mention = formatted
+  if (mention.startsWith('<#') && mention.endsWith('>')) {
+    return {
+      formatted,
+      type: 'channel',
+      channelId: mention.slice(2, -1),
+    }
+  }
   if (!mention.startsWith('<@') || !mention.endsWith('>')) return null
 
   mention = mention.slice(2, -1)
@@ -12,20 +19,13 @@ export function parseMention(rawValue: string): Mention | null {
   }
   if (mention.startsWith('&')) {
     return {
-      rawValue,
+      formatted,
       type: 'role',
       roleId: mention.slice(1),
     }
   }
-  if (mention.startsWith('#')) {
-    return {
-      rawValue,
-      type: 'channel',
-      channelId: mention.slice(1),
-    }
-  }
   return {
-    rawValue,
+    formatted,
     type: 'user',
     userId: mention,
   }

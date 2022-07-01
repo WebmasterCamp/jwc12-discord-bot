@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { ReflectMetadataProvider } from '@discord-nestjs/core'
 import { CamperModule } from 'src/camper/camper.module'
+import { GuildModule } from 'src/guild/guild.module'
 import { PrismaModule } from 'src/prisma/prisma.module'
 
 import { BalanceCommand } from './balance/balance.command'
@@ -15,7 +16,7 @@ import { RoleCommand } from './role/role.command'
 import { VerifyCommand } from './verify/verify.command'
 
 @Module({
-  imports: [PrismaModule, CamperModule],
+  imports: [PrismaModule, CamperModule, GuildModule],
   providers: [
     ReflectMetadataProvider,
     PingCommand,

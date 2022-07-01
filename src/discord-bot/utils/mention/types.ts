@@ -1,5 +1,5 @@
 export interface BaseMention {
-  rawValue: string
+  formatted: string
 }
 
 export interface UserMention extends BaseMention {
