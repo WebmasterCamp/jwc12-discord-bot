@@ -28,16 +28,17 @@ export class BalanceCommand implements DiscordCommand {
 
     if (!camperInfo) {
       this.logger.error(`User ${interaction.user.id} is not registered`)
-      return { content: 'หาข้อมูลของคุณไม่พบ' }
+      return { content: 'หาข้อมูลของคุณไม่พบ', ephemeral: true }
     }
 
     try {
       return {
         content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${camperInfo.coins} แต้มบุญ`,
+        ephemeral: true,
       }
     } catch (err) {
       this.logger.error(err)
-      return { content: 'มีบางอย่างผิดพลาด' }
+      return { content: 'มีบางอย่างผิดพลาด', ephemeral: true }
     }
   }
 }
