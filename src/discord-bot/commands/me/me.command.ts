@@ -59,10 +59,11 @@ export class MeCommand implements DiscordCommand {
 
       return {
         embeds: [camperInfoEmbed],
+        ephemeral: true,
       }
     } catch (err) {
       this.logger.error(err)
-      return { content: 'มีบางอย่างผิดพลาด' }
+      return { content: 'มีบางอย่างผิดพลาด', ephemeral: true }
     }
   }
 }

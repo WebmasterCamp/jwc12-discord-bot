@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { Command, DiscordCommand } from '@discord-nestjs/core'
-import { CommandInteraction } from 'discord.js'
+import { CommandInteraction, Formatters, InteractionReplyOptions } from 'discord.js'
 import { PrismaService } from 'src/prisma/prisma.service'
 
 @Command({
@@ -16,7 +16,7 @@ export class PingCommand implements DiscordCommand {
     this.logger.log(`${PingCommand.name} initialized`)
   }
 
-  handler(interaction: CommandInteraction): string {
-    return `Pong ${interaction.user.username}!`
+  handler(interaction: CommandInteraction): InteractionReplyOptions {
+    return { content: `Pong ${Formatters.userMention(interaction.user.id)}!`, ephemeral: true }
   }
 }
