@@ -7,7 +7,7 @@ import { BotLogger } from '../logger/bot-logger'
 import { formatCommandOptions } from '../utils/format-command-options'
 
 @Injectable()
-@Catch(Error)
+@Catch()
 export class CommandErrorFilter implements DiscordExceptionFilter {
   constructor(private botLogger: BotLogger) {}
 
