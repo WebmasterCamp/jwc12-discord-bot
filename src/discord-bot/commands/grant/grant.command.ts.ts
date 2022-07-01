@@ -53,11 +53,11 @@ export class GrantCommand implements DiscordTransformedCommand<GrantDTO> {
 
     if (target.type === 'role') {
       return {
-        content: `${target.formatted} รับไปเลยคนละ ${amount} แต้ม❗️ โดยพี่ <@${interaction.user.id}>`,
+        content: `${target.formatted} รับไปเลยคนละ ${amount} แต้มบุญ❗️`,
       }
     } else {
       return {
-        content: `<@${interaction.user.id}> แจกแต้มบุญให้น้อง ${target.formatted} เป็นมูลค่า ${amount} แต้ม`,
+        content: `<@${interaction.user.id}> ได้แต้มบุญเพิ่ม ${amount} แต้ม`,
       }
     }
   }
