@@ -19,6 +19,7 @@ import { VerifyCommand } from './verify/verify.command'
   imports: [forwardRef(() => DiscordBotModule), PrismaModule, CamperModule, GuildModule],
   providers: [
     ReflectMetadataProvider,
+
     PingCommand,
     MeCommand,
     VerifyCommand,

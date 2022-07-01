@@ -6,6 +6,7 @@ import {
   DiscordTransformedCommand,
   Payload,
   TransformedCommandExecutionContext,
+  UseFilters,
   UsePipes,
 } from '@discord-nestjs/core'
 import { InteractionReplyOptions } from 'discord.js'
@@ -13,6 +14,7 @@ import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { parseMention } from 'src/discord-bot/utils/mention'
 import { GuildService } from 'src/guild/guild.service'
 
+import { CommandErrorFilter } from '../error-filter'
 import { StaffDTO } from './staff.dto'
 
 @Command({
@@ -21,6 +23,7 @@ import { StaffDTO } from './staff.dto'
 })
 @Injectable()
 @UsePipes(TransformPipe)
+@UseFilters(CommandErrorFilter)
 export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
   private readonly logger = new Logger(StaffCommand.name)
 
@@ -40,22 +43,13 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
       }
     }
 
-    try {
-      await this.guildService.assignRoleToId(interaction.guild, 'STAFF', userMention.userId)
-      await interaction.guild.members.edit(userMention.userId, {
-        nick: `${dto.nickname} ${dto.gen}`,
-      })
-      return {
-        content: `ให้ role staff กับ ${userMention.formatted} แล้ว`,
-        ephemeral: true,
-      }
-    } catch (err) {
-      this.logger.error(err)
-      await this.botLogger.logError(interaction, '/staff failed', err)
-      return {
-        content: 'มีบางอย่างผิดพลาด',
-        ephemeral: true,
-      }
+    await this.guildService.assignRoleToId(interaction.guild, 'STAFF', userMention.userId)
+    await interaction.guild.members.edit(userMention.userId, {
+      nick: `${dto.nickname} ${dto.gen}`,
+    })
+    return {
+      content: `ให้ role staff กับ ${userMention.formatted} แล้ว`,
+      ephemeral: true,
     }
   }
 }

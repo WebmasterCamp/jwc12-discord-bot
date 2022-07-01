@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { Command, DiscordCommand } from '@discord-nestjs/core'
+import { Command, DiscordCommand, UseFilters } from '@discord-nestjs/core'
 import {
   CommandInteraction,
   EmbedFieldData,
@@ -9,11 +9,14 @@ import {
 } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
 
+import { CommandErrorFilter } from '../error-filter'
+
 @Command({
   name: 'me',
   description: 'Retrieve User information',
 })
 @Injectable()
+@UseFilters(CommandErrorFilter)
 export class MeCommand implements DiscordCommand {
   private readonly logger = new Logger(MeCommand.name)
 
@@ -29,32 +32,27 @@ export class MeCommand implements DiscordCommand {
       return { content: 'หาข้อมูลของคุณไม่พบ', ephemeral: true }
     }
 
-    try {
-      const fileds: EmbedFieldData[] | EmbedFieldData[][] = [
-        { name: 'ชื่อจริง', value: camperInfo.firstName, inline: true },
-        { name: 'นามกสุล', value: camperInfo.lastName, inline: true },
-        { name: 'ชื่อเล่น', value: camperInfo.nickname, inline: true },
-        { name: 'รหัส', value: camperInfo.camperCode, inline: true },
-        { name: 'เบอร์โทรศัพท์', value: camperInfo.telephone, inline: true },
-        { name: 'คะแนน', value: camperInfo.coins.toString(), inline: true },
-      ].filter((item) => !!item)
+    const fileds: EmbedFieldData[] | EmbedFieldData[][] = [
+      { name: 'ชื่อจริง', value: camperInfo.firstName, inline: true },
+      { name: 'นามกสุล', value: camperInfo.lastName, inline: true },
+      { name: 'ชื่อเล่น', value: camperInfo.nickname, inline: true },
+      { name: 'รหัส', value: camperInfo.camperCode, inline: true },
+      { name: 'เบอร์โทรศัพท์', value: camperInfo.telephone, inline: true },
+      { name: 'คะแนน', value: camperInfo.coins.toString(), inline: true },
+    ].filter((item) => !!item)
 
-      const camperInfoEmbed = new MessageEmbed()
-        .setTitle('รายละเอียดของคุณ')
-        .setAuthor({
-          name: `${camperInfo.firstName} ${camperInfo.lastName}`,
-          iconURL: interaction.user.avatarURL(),
-        })
-        .addFields(fileds)
-        .setTimestamp()
+    const camperInfoEmbed = new MessageEmbed()
+      .setTitle('รายละเอียดของคุณ')
+      .setAuthor({
+        name: `${camperInfo.firstName} ${camperInfo.lastName}`,
+        iconURL: interaction.user.avatarURL(),
+      })
+      .addFields(fileds)
+      .setTimestamp()
 
-      return {
-        embeds: [camperInfoEmbed],
-        ephemeral: true,
-      }
-    } catch (err) {
-      this.logger.error(err)
-      return { content: 'มีบางอย่างผิดพลาด', ephemeral: true }
+    return {
+      embeds: [camperInfoEmbed],
+      ephemeral: true,
     }
   }
 }

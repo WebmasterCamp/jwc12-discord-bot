@@ -1,14 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common'
 
-import { Command, DiscordCommand } from '@discord-nestjs/core'
+import { Command, DiscordCommand, UseFilters } from '@discord-nestjs/core'
 import { CommandInteraction, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
+
+import { CommandErrorFilter } from '../error-filter'
 
 @Command({
   name: 'balance',
   description: 'ตรวจสอบยอดบุญคงเหลือ',
 })
 @Injectable()
+@UseFilters(CommandErrorFilter)
 export class BalanceCommand implements DiscordCommand {
   private readonly logger = new Logger(BalanceCommand.name)
 
@@ -26,13 +29,8 @@ export class BalanceCommand implements DiscordCommand {
 
     const coins = await this.campers.getCoinsById(camperId)
 
-    try {
-      return {
-        content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${coins} แต้มบุญ`,
-      }
-    } catch (err) {
-      this.logger.error(err)
-      return { content: 'มีบางอย่างผิดพลาด', ephemeral: true }
+    return {
+      content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${coins} แต้มบุญ`,
     }
   }
 }

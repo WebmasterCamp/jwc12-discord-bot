@@ -6,12 +6,14 @@ import {
   DiscordTransformedCommand,
   Payload,
   TransformedCommandExecutionContext,
+  UseFilters,
   UsePipes,
 } from '@discord-nestjs/core'
 import { InteractionReplyOptions } from 'discord.js'
 import { parseMention } from 'src/discord-bot/utils/mention'
 import { GuildService } from 'src/guild/guild.service'
 
+import { CommandErrorFilter } from '../error-filter'
 import { LoggerDto } from './logger.dto'
 
 @Command({
@@ -20,6 +22,7 @@ import { LoggerDto } from './logger.dto'
 })
 @Injectable()
 @UsePipes(TransformPipe)
+@UseFilters(CommandErrorFilter)
 export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
   private readonly logger = new Logger(LoggerCommand.name)
 
@@ -31,23 +34,16 @@ export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
     @Payload() dto: LoggerDto,
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
-    try {
-      const channelMention = parseMention(dto.channel)
-      if (!channelMention || channelMention.type !== 'channel') {
-        return {
-          content: `โปรดระบุ channel`,
-          ephemeral: true,
-        }
-      }
-      await this.guildService.setLoggerChannel(interaction.guildId, channelMention.channelId)
+    const channelMention = parseMention(dto.channel)
+    if (!channelMention || channelMention.type !== 'channel') {
       return {
-        content: `ตั้งค่าการแจ้งเตือนไปที่ ${channelMention.formatted}`,
-      }
-    } catch (err) {
-      return {
-        content: `มีข้อผิดพลาด ${err.message}`,
+        content: `โปรดระบุ channel`,
         ephemeral: true,
       }
+    }
+    await this.guildService.setLoggerChannel(interaction.guildId, channelMention.channelId)
+    return {
+      content: `ตั้งค่าการแจ้งเตือนไปที่ ${channelMention.formatted}`,
     }
   }
 }
