@@ -12,23 +12,23 @@ import { Guild, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
 import { Mention, parseMention } from 'src/discord-bot/utils/mention'
 
-import { GiveDTO } from './give.dto'
+import { GrantDTO } from './grant.dto'
 
 @Command({
-  name: 'give',
-  description: 'ให้แต้มบุญ',
+  name: 'grant',
+  description: 'เสกแต้มบุญให้น้อง',
 })
 @Injectable()
 @UsePipes(TransformPipe)
-export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
-  private readonly logger = new Logger(GiveCommand.name)
+export class GrantCommand implements DiscordTransformedCommand<GrantDTO> {
+  private readonly logger = new Logger(GrantCommand.name)
 
   constructor(private campers: CamperRepository) {
-    this.logger.log(`${GiveCommand.name} initialized`)
+    this.logger.log(`${GrantCommand.name} initialized`)
   }
 
   async handler(
-    @Payload() dto: GiveDTO,
+    @Payload() dto: GrantDTO,
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
     try {

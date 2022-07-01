@@ -1,6 +1,6 @@
 import { Param } from '@discord-nestjs/core'
 
-export class GiveDTO {
+export class GrantDTO {
   @Param({
     name: 'target',
     description: 'ระบุชื่อผู้ใช้ หรือ role @',
