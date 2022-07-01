@@ -11,6 +11,7 @@ import {
 } from '@discord-nestjs/core'
 import { Guild, InteractionReplyOptions } from 'discord.js'
 import { IsGiverInteractionGuard } from 'src/discord-bot/guard/is-giver.guard'
+import { Mention, parseMention } from 'src/discord-bot/utils/mention'
 import { PrismaService } from 'src/prisma.service'
 
 import { GiveDTO } from './give.dto'
@@ -34,7 +35,14 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
     try {
-      const ids = await this.getCamperIds(dto.target, interaction.guild)
+      const target = parseMention(dto.target)
+      if (target === null || !['user', 'role'].includes(target.type)) {
+        return {
+          content: `โปรดระบุผู้ใช้หรือ role ที่ต้องการให้แต้มบุญ`,
+          ephemeral: true,
+        }
+      }
+      const ids = await this.getCamperIds(target, interaction.guild)
       if (!ids) {
         return {
           content: `ไม่พบผู้ใช้ที่ระบุ: ${dto.target}`,
@@ -55,7 +63,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
         },
       })
 
-      if (dto.target.startsWith('<@&')) {
+      if (target.type === 'role') {
         return {
           content: `${dto.target} รับไปเลยคนละ ${amount} แต้มบุญ❗️ โดยพี่ <@${interaction.user.id}>`,
         }
@@ -73,28 +81,24 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     }
   }
 
-  private async getCamperIds(mention: string, guild: Guild): Promise<string[] | null> {
-    if (!mention.startsWith('<@') || !mention.endsWith('>')) return null
-
-    mention = mention.slice(2, -1)
-    if (mention.startsWith('!')) {
-      mention = mention.slice(1)
+  private async getCamperIds(mention: Mention, guild: Guild): Promise<string[] | null> {
+    switch (mention.type) {
+      case 'user':
+        const camper = await this.prisma.discordAccount.findUnique({
+          select: { Camper: { select: { id: true } } },
+          where: { discordId: mention.userId },
+        })
+        if (!camper) return null
+        return [camper.Camper.id]
+      case 'role':
+        return this.getCamperIdsWithRole(mention.roleId, guild)
+      default:
+        return null
     }
-    if (mention.startsWith('&')) {
-      return await this.getCamperIdsWithRole(mention, guild)
-    }
-
-    const camper = await this.prisma.discordAccount.findUnique({
-      select: { Camper: { select: { id: true } } },
-      where: { discordId: mention },
-    })
-    if (!camper) return null
-
-    return [camper.Camper.id]
   }
 
   private async getCamperIdsWithRole(roleId: string, guild: Guild): Promise<string[] | null> {
-    const role = await guild.roles.fetch(roleId.slice(1))
+    const role = await guild.roles.fetch(roleId)
     if (!role) return null
 
     const memberIds = role.members.map((member) => member.id)
