@@ -51,8 +51,7 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
       }
     } catch (err) {
       this.logger.error(err)
-      this.botLogger.log(interaction, '/staff failed')
-      this.botLogger.logError(interaction, err)
+      await this.botLogger.logError(interaction, '/staff failed', err)
       return {
         content: 'มีบางอย่างผิดพลาด',
         ephemeral: true,

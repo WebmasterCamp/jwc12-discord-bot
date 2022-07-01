@@ -12,9 +12,9 @@ export class BotLogger {
     await loggingChannel.send(message)
   }
 
-  async logError(interaction: Interaction, error: Error) {
+  async logError(interaction: Interaction, message: string, error: Error) {
     const loggingChannel = await this.getLoggingChannel(interaction.guild)
-    await loggingChannel.send(`Error: ${error.message}\n${Formatters.codeBlock(error.stack)}`)
+    await loggingChannel.send(`${message}\n${Formatters.codeBlock(error.stack)}`)
   }
 
   private async getLoggingChannel(guild: Guild): Promise<TextChannel | null> {
