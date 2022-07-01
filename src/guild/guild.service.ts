@@ -9,6 +9,12 @@ import { RoleKey, roles } from './roles'
 export class GuildService {
   constructor(private prisma: PrismaService) {}
 
+  async setup(guild: Guild) {
+    await this.getGuildMetadata(guild.id)
+    const roleKeys = Object.keys(roles) as RoleKey[]
+    await Promise.all(roleKeys.map((roleKey) => this.getRole(guild, roleKey)))
+  }
+
   async getGuildMetadata(guildId: string) {
     return await this.prisma.guildMetadata.upsert({
       where: { guildId: guildId },

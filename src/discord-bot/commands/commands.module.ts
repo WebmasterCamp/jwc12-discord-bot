@@ -11,6 +11,7 @@ import { GiveCommand } from './give/give.command'
 import { LoggerCommand } from './logger/logger.command'
 import { MeCommand } from './me/me.command'
 import { PingCommand } from './ping/ping.command'
+import { SetupCommand } from './setup/setup.command'
 import { VerifyCommand } from './verify/verify.command'
 
 @Module({
@@ -23,6 +24,7 @@ import { VerifyCommand } from './verify/verify.command'
     LoggerCommand,
     BalanceCommand,
     GiveCommand,
+    SetupCommand,
   ],
 })
 export class DiscordBotSlashCommands {}
