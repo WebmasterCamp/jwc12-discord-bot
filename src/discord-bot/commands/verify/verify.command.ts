@@ -137,7 +137,7 @@ export class VerifyCommand implements DiscordCommand {
 
     if (verifyCode.length !== 6) {
       await notifyLogging(this.prisma, modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
-      await modal.reply({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง', ephemeral: true })
+      await modal.update({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง' })
       return
     }
 
@@ -148,7 +148,8 @@ export class VerifyCommand implements DiscordCommand {
       },
     })
     if (camper === null) {
-      await modal.reply({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง', ephemeral: true })
+      await notifyLogging(this.prisma, modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
+      await modal.update({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง' })
       return
     }
 
