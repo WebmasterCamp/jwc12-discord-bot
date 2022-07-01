@@ -6,12 +6,10 @@ import {
   DiscordTransformedCommand,
   Payload,
   TransformedCommandExecutionContext,
-  UseGuards,
   UsePipes,
 } from '@discord-nestjs/core'
 import { Guild, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
-import { IsGiverInteractionGuard } from 'src/discord-bot/guard/is-giver.guard'
 import { Mention, parseMention } from 'src/discord-bot/utils/mention'
 
 import { GiveDTO } from './give.dto'
@@ -22,7 +20,6 @@ import { GiveDTO } from './give.dto'
 })
 @Injectable()
 @UsePipes(TransformPipe)
-@UseGuards(IsGiverInteractionGuard)
 export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
   private readonly logger = new Logger(GiveCommand.name)
 

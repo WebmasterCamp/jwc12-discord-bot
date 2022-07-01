@@ -11,9 +11,6 @@ import { GiveCommand } from './give/give.command'
 import { LoggerCommand } from './logger/logger.command'
 import { MeCommand } from './me/me.command'
 import { PingCommand } from './ping/ping.command'
-import { RoleAdminSubCommand } from './role/role-admin.subcommand'
-import { RoleGiverSubCommand } from './role/role-giver.subcommand'
-import { RoleCommand } from './role/role.command'
 import { VerifyCommand } from './verify/verify.command'
 
 @Module({
@@ -25,9 +22,6 @@ import { VerifyCommand } from './verify/verify.command'
     VerifyCommand,
     LoggerCommand,
     BalanceCommand,
-    RoleCommand,
-    RoleGiverSubCommand,
-    RoleAdminSubCommand,
     GiveCommand,
   ],
 })

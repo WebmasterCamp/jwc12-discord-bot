@@ -6,11 +6,9 @@ import {
   DiscordTransformedCommand,
   Payload,
   TransformedCommandExecutionContext,
-  UseGuards,
   UsePipes,
 } from '@discord-nestjs/core'
 import { InteractionReplyOptions } from 'discord.js'
-import { IsAdminInteractionGuard } from 'src/discord-bot/guard/is-admin.guard'
 import { parseMention } from 'src/discord-bot/utils/mention'
 import { GuildService } from 'src/guild/guild.service'
 
@@ -22,7 +20,6 @@ import { LoggerDto } from './logger.dto'
 })
 @Injectable()
 @UsePipes(TransformPipe)
-@UseGuards(IsAdminInteractionGuard)
 export class LoggerCommand implements DiscordTransformedCommand<LoggerDto> {
   private readonly logger = new Logger(LoggerCommand.name)
 

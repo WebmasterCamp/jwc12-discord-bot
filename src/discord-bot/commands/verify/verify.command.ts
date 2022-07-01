@@ -17,8 +17,7 @@ import { TextInputStyles } from 'discord.js/typings/enums'
 import { CamperRepository } from 'src/camper/camper.repository'
 import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
-import { createCamperRoleOptions, findOrCreateRole } from 'src/discord-bot/utils/role'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { GuildService } from 'src/guild/guild.service'
 
 const VERIFY_BUTTON_ID = 'verifyButton'
 const VERIFY_MODAL_ID = 'verifyModal'
@@ -33,30 +32,11 @@ export class VerifyCommand implements DiscordCommand {
   private readonly logger = new Logger(VerifyCommand.name)
 
   constructor(
-    private prisma: PrismaService,
     private campers: CamperRepository,
-    private botLogger: BotLogger
+    private botLogger: BotLogger,
+    private guildService: GuildService
   ) {
     this.logger.log(`${VerifyCommand.name} initialized`)
-  }
-
-  async assignRoleToCamper(interaction: Interaction) {
-    const guild = await interaction.guild.fetch()
-    const userId = interaction.user.id
-
-    const metadata = await this.prisma.guildMetadata.findUnique({
-      where: { guildId: guild.id },
-    })
-
-    const camperRoleOption = createCamperRoleOptions()
-    const camperRole = await findOrCreateRole(interaction, camperRoleOption, metadata?.camperRole)
-    await guild.members.cache.get(userId).roles.add(camperRole)
-
-    await this.prisma.guildMetadata.upsert({
-      where: { guildId: guild.id },
-      create: { guildId: guild.id, camperRole: camperRole.id },
-      update: { camperRole: camperRole.id },
-    })
   }
 
   async handler(interaction: CommandInteraction): Promise<InteractionReplyOptions | void> {
@@ -134,7 +114,8 @@ export class VerifyCommand implements DiscordCommand {
 
     try {
       await this.campers.associateToDiscordId(camper.id, modal.user.id)
-      await this.assignRoleToCamper(modal)
+      await this.guildService.assignRoleToId(modal.guild, 'CAMPER', modal.user.id)
+      await this.guildService.assignRoleToId(modal.guild, camper.branch, modal.user.id)
       await modal.update({
         content: `ยืนยันตัวตนสำเร็จ`,
         components: [],

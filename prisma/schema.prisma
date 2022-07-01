@@ -126,11 +126,17 @@ model GuildMetadata {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  giverRole      String?
-  staffRole      String?
-  camperRole     String?
-  adminRole      String?
   loggingChannel String?
+  roles          GuildRole[]
+}
+
+model GuildRole {
+  guildId String
+  roleKey String
+
+  roleId String
+  guild  GuildMetadata @relation(fields: [guildId], references: [guildId])
+  @@id([guildId, roleKey])
 }
 
 enum BranchType {

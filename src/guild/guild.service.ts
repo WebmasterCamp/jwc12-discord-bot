@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
 
+import { Guild } from 'discord.js'
 import { PrismaService } from 'src/prisma/prisma.service'
+
+import { RoleKey, roles } from './roles'
 
 @Injectable()
 export class GuildService {
@@ -12,6 +15,31 @@ export class GuildService {
       update: {},
       create: { guildId },
     })
+  }
+
+  async getRole(guild: Guild, roleKey: RoleKey) {
+    const guildRole = await this.prisma.guildRole.findUnique({
+      select: { roleId: true },
+      where: { guildId_roleKey: { guildId: guild.id, roleKey: roleKey } },
+    })
+    if (guildRole) {
+      return guild.roles.cache.find((role) => role.id === guildRole.roleId)
+    }
+
+    const role = await guild.roles.create(roles[roleKey])
+    await this.prisma.guildRole.create({
+      data: {
+        guildId: guild.id,
+        roleKey: roleKey,
+        roleId: role.id,
+      },
+    })
+    return role
+  }
+
+  async assignRoleToId(guild: Guild, roleKey: RoleKey, discordId: string) {
+    const role = await this.getRole(guild, roleKey)
+    await guild.members.cache.get(discordId).roles.add(role)
   }
 
   async setLoggerChannel(guildId: string, channelId: string) {
