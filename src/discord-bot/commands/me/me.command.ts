@@ -8,6 +8,7 @@ import {
   MessageEmbed,
 } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
+import { NotRegisteredError } from 'src/discord-bot/errors'
 
 import { CommandErrorFilter } from '../error-filter'
 
@@ -28,8 +29,7 @@ export class MeCommand implements DiscordCommand {
     const camperInfo = await this.campers.getByDiscordId(interaction.user.id)
 
     if (!camperInfo) {
-      this.logger.error(`User ${interaction.user.id} is not registered`)
-      return { content: 'หาข้อมูลของคุณไม่พบ', ephemeral: true }
+      throw new NotRegisteredError()
     }
 
     const fileds: EmbedFieldData[] | EmbedFieldData[][] = [
