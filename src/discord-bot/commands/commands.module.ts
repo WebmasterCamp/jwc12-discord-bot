@@ -15,6 +15,7 @@ import { PingCommand } from './ping/ping.command'
 import { SetupCommand } from './setup/setup.command'
 import { StaffCommand } from './staff/staff.command'
 import { VerifyCommand } from './verify/verify.command'
+import { ViewBalanceCommand } from './viewbalance/viewbalance.command'
 
 @Module({
   imports: [forwardRef(() => DiscordBotModule), PrismaModule, CamperModule, GuildModule],
@@ -25,6 +26,7 @@ import { VerifyCommand } from './verify/verify.command'
     VerifyCommand,
     LoggerCommand,
     BalanceCommand,
+    ViewBalanceCommand,
     GiveCommand,
     GrantCommand,
     SetupCommand,

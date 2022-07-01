@@ -50,6 +50,14 @@ export class CamperRepository {
     return camper.coins
   }
 
+  async getCoinsByIds(camperIds: string[]): Promise<number> {
+    const campers = await this.prisma.camper.findMany({
+      select: { coins: true },
+      where: { id: { in: camperIds } },
+    })
+    return campers.reduce((sum, camper) => sum + camper.coins, 0)
+  }
+
   async transferCoin(fromId: string, toId: string, amount: number) {
     await this.prisma.$transaction([
       this.prisma.camper.update({
