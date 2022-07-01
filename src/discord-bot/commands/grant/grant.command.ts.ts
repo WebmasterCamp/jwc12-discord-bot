@@ -11,7 +11,7 @@ import {
 } from '@discord-nestjs/core'
 import { Guild, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
-import { Mention, parseMention } from 'src/discord-bot/utils/mention'
+import { Mention, mentionFromId } from 'src/discord-bot/utils/mention'
 
 import { CommandErrorFilter } from '../error-filter'
 import { GrantDTO } from './grant.dto'
@@ -34,7 +34,7 @@ export class GrantCommand implements DiscordTransformedCommand<GrantDTO> {
     @Payload() dto: GrantDTO,
     { interaction }: TransformedCommandExecutionContext
   ): Promise<InteractionReplyOptions> {
-    const target = parseMention(dto.target)
+    const target = await mentionFromId(interaction.guild, dto.target)
     if (target === null || !['user', 'role'].includes(target.type)) {
       return {
         content: `โปรดระบุผู้ใช้หรือ role ที่ต้องการให้แต้มบุญ`,
@@ -48,16 +48,16 @@ export class GrantCommand implements DiscordTransformedCommand<GrantDTO> {
         ephemeral: true,
       }
     }
-    const amount = parseInt(dto.amount)
+    const amount = dto.amount
     await this.campers.incrementCoinByIds(ids, amount)
 
     if (target.type === 'role') {
       return {
-        content: `${dto.target} รับไปเลยคนละ ${amount} แต้มบุญ❗️ โดยพี่ <@${interaction.user.id}>`,
+        content: `${target.formatted} รับไปเลยคนละ ${amount} แต้มบุญ❗️ โดยพี่ <@${interaction.user.id}>`,
       }
     } else {
       return {
-        content: `<@${interaction.user.id}> แจกแต้มบุญให้น้อง ${dto.target} เป็นมูลค่า ${amount} แต้มบุญ`,
+        content: `<@${interaction.user.id}> แจกแต้มบุญให้น้อง ${target.formatted} เป็นมูลค่า ${amount} แต้มบุญ`,
       }
     }
   }

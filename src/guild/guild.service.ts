@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
-import { Guild } from 'discord.js'
+import { Formatters, Guild } from 'discord.js'
+import { Mention } from 'src/discord-bot/utils/mention'
 import { PrismaService } from 'src/prisma/prisma.service'
 
 import { RoleKey, roles } from './roles'

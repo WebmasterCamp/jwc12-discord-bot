@@ -1,7 +1,8 @@
-import { Param } from '@discord-nestjs/core'
+import { Param, ParamType } from '@discord-nestjs/core'
 
 export class GrantDTO {
   @Param({
+    type: ParamType.MENTIONABLE,
     name: 'target',
     description: 'ระบุชื่อผู้ใช้ หรือ role @',
     required: true,
@@ -9,9 +10,10 @@ export class GrantDTO {
   target: string
 
   @Param({
+    type: ParamType.INTEGER,
     name: 'amount',
     description: 'แต้มบุญที่จะให้',
     required: true,
   })
-  amount: string
+  amount: number
 }
