@@ -9,6 +9,7 @@ import {
   UsePipes,
 } from '@discord-nestjs/core'
 import { InteractionReplyOptions } from 'discord.js'
+import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { parseMention } from 'src/discord-bot/utils/mention'
 import { GuildService } from 'src/guild/guild.service'
 
@@ -23,7 +24,7 @@ import { StaffDTO } from './staff.dto'
 export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
   private readonly logger = new Logger(StaffCommand.name)
 
-  constructor(private guildService: GuildService) {
+  constructor(private guildService: GuildService, private botLogger: BotLogger) {
     this.logger.log(`${StaffCommand.name} initialized`)
   }
 
@@ -50,6 +51,8 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
       }
     } catch (err) {
       this.logger.error(err)
+      this.botLogger.log(interaction, '/staff failed')
+      this.botLogger.logError(interaction, err)
       return {
         content: 'มีบางอย่างผิดพลาด',
         ephemeral: true,
