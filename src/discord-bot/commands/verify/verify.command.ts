@@ -101,14 +101,23 @@ export class VerifyCommand implements DiscordCommand {
     const verifyCode = modal.fields.getTextInputValue(VERIFY_CODE_ID)
 
     if (verifyCode.length !== 6) {
-      await this.botLogger.log(modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
-      await modal.update({ content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง' })
+      await this.botLogger.log(
+        modal,
+        `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง: ${verifyCode}`
+      )
+      await modal.update({
+        content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง',
+        components: [],
+      })
       return
     }
 
     const camper = await this.campers.findByVerifyCode(verifyCode)
     if (camper === null) {
-      await this.botLogger.log(modal, `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง`)
+      await this.botLogger.log(
+        modal,
+        `<@${modal.user.id}> รหัสยืนยันตัวตนไม่ถูกต้อง: ${verifyCode}`
+      )
       await modal.update({
         content: 'รหัสยืนยันตัวตนไม่ถูกต้อง โปรดลองใหม่อีกครั้ง',
         components: [],
