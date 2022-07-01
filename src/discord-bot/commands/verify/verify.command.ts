@@ -5,6 +5,7 @@ import { BranchType } from '@prisma/client'
 import {
   ButtonInteraction,
   CommandInteraction,
+  Formatters,
   Interaction,
   InteractionReplyOptions,
   MessageActionRow,
@@ -138,7 +139,9 @@ export class VerifyCommand implements DiscordCommand {
         components: [],
       })
       await modal.channel.send({
-        content: `🎉 ยินดีต้อนรับ น้อง ${camper.nickname} จากสาขา ${capitalize(camper.branch)}`,
+        content: `🎉 ยินดีต้อนรับ น้อง ${Formatters.userMention(
+          modal.user.id
+        )} จากสาขา ${capitalize(camper.branch)}`,
         components: [],
       })
     } catch (err) {
