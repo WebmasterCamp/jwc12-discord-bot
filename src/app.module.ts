@@ -51,7 +51,7 @@ function getRegisterCommandOptions(config: ConfigService): RegisterCommandOption
   const guilds = guildsString.split(',')
   const options: RegisterCommandOptions[] = guilds.map((guild) => ({
     forGuild: guild,
-    removeCommandsBefore: config.get<boolean>('production'),
+    removeCommandsBefore: false,
   }))
   return options
 }
