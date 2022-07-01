@@ -6,6 +6,7 @@ import { Intents } from 'discord.js'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { CamperModule } from './camper/camper.module'
 import { configuration } from './config/configuration'
 import { DiscordBotModule } from './discord-bot/discord-bot.module'
 import { PrismaModule } from './prisma/prisma.module'
@@ -34,6 +35,7 @@ import { PrismaModule } from './prisma/prisma.module'
     }),
     DiscordBotModule,
     PrismaModule,
+    CamperModule,
   ],
   controllers: [AppController],
   providers: [AppService],
