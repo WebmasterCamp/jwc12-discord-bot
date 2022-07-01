@@ -162,7 +162,11 @@ export class VerifyCommand implements DiscordCommand {
         where: { id: camper.id },
       })
       await this.assignRoleToCamper(modal)
-      await modal.reply({
+      await modal.update({
+        content: `ยืนยันตัวตนสำเร็จ`,
+        components: [],
+      })
+      await modal.channel.send({
         content: `🎉 ยินดีต้อนรับ น้อง ${camper.nickname} จากสาขา ${capitalize(camper.branch)}`,
         components: [],
       })
