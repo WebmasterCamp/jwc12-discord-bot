@@ -32,7 +32,11 @@ export class GuildService {
       return guild.roles.cache.find((role) => role.id === guildRole.roleId)
     }
 
-    const role = await guild.roles.create(roles[roleKey])
+    const roleOptions = roles[roleKey]
+    let role = guild.roles.cache.find((role) => role.name === roleOptions.name)
+    if (!role) {
+      role = await guild.roles.create(roles[roleKey])
+    }
     await this.prisma.guildRole.create({
       data: {
         guildId: guild.id,
