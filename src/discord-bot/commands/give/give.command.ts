@@ -82,7 +82,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
       return {
         content: `น้อง ${Formatters.userMention(
           fromDiscordId
-        )} มีแต้มบุญไม่พอ ยังจะโอนให้เพื่อนอีกเหรอ`,
+        )} มีแต้มบุญไม่พอ ยังจะโอนให้เพื่อนอีกเหรอ 👀`,
       }
     }
 
@@ -90,7 +90,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     return {
       content: `${Formatters.userMention(fromDiscordId)} โอนแต้มบุญให้ ${Formatters.userMention(
         toDiscordId
-      )} ${amount} แต้ม`,
+      )} ${amount} แต้มบุญ 🙏`,
     }
   }
 
@@ -107,7 +107,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
       return {
         content: `น้อง ${Formatters.userMention(
           fromDiscordId
-        )} พยายามจะขโมยแต้มบุญเพื่อน แต่ไม่ได้เตรียมแต้มบุญไว้วางแผนขโมย`,
+        )} พยายามจะขโมยแต้มบุญเพื่อน แต่เตรียมแต้มบุญไว้ไม่พอวางแผนขโมย`,
       }
     }
 
@@ -118,14 +118,14 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
       return {
         content: `${Formatters.userMention(fromDiscordId)} ขโมยแต้มบุญจาก ${Formatters.userMention(
           toDiscordId
-        )} มาได้ ${stealAmount} แต้ม`,
+        )} มาได้ ${stealAmount} แต้มบุญ 💰`,
       }
     } else {
       await this.campers.transferCoin(from.id, to.id, penalty)
       return {
         content: `${Formatters.userMention(fromDiscordId)} ขโมยแต้มบุญจาก ${Formatters.userMention(
           toDiscordId
-        )} ไม่สำเร็จ ต้องเสียแต้มบุญ ${penalty} แต้มเป็นค่าทำขวัญ`,
+        )} ไม่สำเร็จ ต้องเสีย ${penalty} แต้มบุญเป็นค่าทำขวัญ 👻`,
       }
     }
   }
