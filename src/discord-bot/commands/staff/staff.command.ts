@@ -40,7 +40,6 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
     })
     return {
       content: `ให้ role staff กับ ${Formatters.userMention(dto.user)} แล้ว`,
-      ephemeral: true,
     }
   }
 }
