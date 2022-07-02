@@ -1,24 +1,36 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 
 import { Catch, DiscordArgumentMetadata, DiscordExceptionFilter } from '@discord-nestjs/core'
-import { Formatters } from 'discord.js'
 import dedent from 'ts-dedent'
 
-import { NotRegisteredError } from '../errors'
 import { BotLogger } from '../logger/bot-logger'
 
 @Injectable()
 @Catch()
 export class CommandErrorFilter implements DiscordExceptionFilter {
-  constructor(private botLogger: BotLogger) {}
+  private readonly logger = new Logger(CommandErrorFilter.name)
+
+  constructor(private botLogger: BotLogger) {
+    this.logger.log(`${CommandErrorFilter.name} initialized`)
+  }
 
   async catch(error: Error, metadata: DiscordArgumentMetadata<'interactionCreate'>): Promise<void> {
-    const [interaction] = metadata.eventArgs
+    try {
+      const [interaction] = metadata.eventArgs
 
-    if (interaction.isCommand()) {
-      await this.botLogger.logCommandError(interaction, error)
-    } else if (interaction.isContextMenu()) {
-      await this.botLogger.logContextMenuError(interaction, error)
+      if (interaction.isCommand()) {
+        await this.botLogger.logCommandError(interaction, error)
+      } else if (interaction.isContextMenu()) {
+        await this.botLogger.logContextMenuError(interaction, error)
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        e = e.stack
+      }
+      this.logger.error(dedent`
+        Error filter failed. I don't know what to do, but here's the error: 
+        ${e}
+      `)
     }
   }
 }
