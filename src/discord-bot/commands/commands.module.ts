@@ -10,6 +10,8 @@ import { BalanceCommand } from './balance/balance.command'
 import { ClearCommand } from './clear/clear.command'
 import { GiveCommand } from './give/give.command'
 import { GrantCommand } from './grant/grant.command.ts'
+import { LoggerErrorsSubCommand } from './logger/logger-errors.command'
+import { LoggerEventsSubCommand } from './logger/logger-events.command'
 import { LoggerCommand } from './logger/logger.command'
 import { MeCommand } from './me/me.command'
 import { PingCommand } from './ping/ping.command'
@@ -29,6 +31,8 @@ import { ViewBalanceCommand } from './viewbalance/viewbalance.command'
     MeCommand,
     VerifyCommand,
     LoggerCommand,
+    LoggerEventsSubCommand,
+    LoggerErrorsSubCommand,
     BalanceCommand,
     ViewBalanceCommand,
     RankCommand,

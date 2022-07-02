@@ -59,4 +59,12 @@ export class GuildService {
       create: { guildId: guildId, loggingChannel: channelId },
     })
   }
+
+  async setErrorChannel(guildId: string, channelId: string) {
+    await this.prisma.guildMetadata.upsert({
+      where: { guildId: guildId },
+      update: { errorChannel: channelId },
+      create: { guildId: guildId, errorChannel: channelId },
+    })
+  }
 }

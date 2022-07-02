@@ -10,9 +10,7 @@ import { BotLogger } from '../logger/bot-logger'
 export class CommandErrorFilter implements DiscordExceptionFilter {
   private readonly logger = new Logger(CommandErrorFilter.name)
 
-  constructor(private botLogger: BotLogger) {
-    this.logger.log(`${CommandErrorFilter.name} initialized`)
-  }
+  constructor(private botLogger: BotLogger) {}
 
   async catch(error: Error, metadata: DiscordArgumentMetadata<'interactionCreate'>): Promise<void> {
     try {

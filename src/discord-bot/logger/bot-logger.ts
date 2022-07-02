@@ -24,8 +24,10 @@ export class BotLogger {
   }
 
   async logError(interaction: Interaction, message: string, error: Error) {
-    await this.log(
-      interaction,
+    const errorChannel =
+      (await this.getErrorChannel(interaction.guild)) ??
+      (await this.getLoggingChannel(interaction.guild))
+    await errorChannel.send(
       dedent`
         ${message}
         ${Formatters.codeBlock(error.stack)}
@@ -39,6 +41,14 @@ export class BotLogger {
 
     const loggingChannel = guild.channels.cache.get(metadata.loggingChannel) as TextChannel
     return loggingChannel
+  }
+
+  private async getErrorChannel(guild: Guild): Promise<TextChannel | null> {
+    const metadata = await this.guildService.getGuildMetadata(guild.id)
+    if (!metadata.errorChannel) return null
+
+    const errorChannel = guild.channels.cache.get(metadata.errorChannel) as TextChannel
+    return errorChannel
   }
 
   async logCommandError(interaction: CommandInteraction, error: Error) {

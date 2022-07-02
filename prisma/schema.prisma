@@ -129,6 +129,7 @@ model GuildMetadata {
   updatedAt DateTime @updatedAt
 
   loggingChannel String?
+  errorChannel   String?
   roles          GuildRole[]
 }
 
