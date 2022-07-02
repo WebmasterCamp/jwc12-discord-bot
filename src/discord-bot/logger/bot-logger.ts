@@ -6,6 +6,8 @@ import {
   Formatters,
   Guild,
   Interaction,
+  MessageActionRow,
+  MessageButton,
   TextChannel,
 } from 'discord.js'
 import { GuildService } from 'src/guild/guild.service'
@@ -23,16 +25,22 @@ export class BotLogger {
     await loggingChannel.send(message)
   }
 
-  async logError(interaction: Interaction, message: string, error: Error) {
+  async logError(
+    interaction: Interaction,
+    message: string,
+    error: Error,
+    components?: MessageActionRow[]
+  ) {
     const errorChannel =
       (await this.getErrorChannel(interaction.guild)) ??
       (await this.getLoggingChannel(interaction.guild))
-    await errorChannel.send(
-      dedent`
+    await errorChannel.send({
+      content: dedent`
         ${message}
         ${Formatters.codeBlock(error.stack)}
-      `
-    )
+      `,
+      components,
+    })
   }
 
   private async getLoggingChannel(guild: Guild): Promise<TextChannel | null> {
@@ -80,10 +88,21 @@ export class BotLogger {
   }
 
   async logContextMenuError(interaction: ContextMenuInteraction, error: Error) {
+    const components = []
     const userMention = Formatters.userMention(interaction.user.id)
     let targetMention: string
     if (interaction.isMessageContextMenu()) {
-      targetMention = `on message ${Formatters.inlineCode(interaction.targetMessage.id)}`
+      const messageId = interaction.targetMessage.id
+      const messageLink = `https://discord.com/channels/${interaction.guildId}/${interaction.channelId}/${messageId}`
+      targetMention = `on message ${Formatters.inlineCode(messageId)}`
+
+      const linkButton = new MessageButton()
+        .setStyle('LINK')
+        .setLabel('Go to message')
+        .setURL(messageLink)
+
+      const row = new MessageActionRow().addComponents(linkButton)
+      components.push(row)
     } else if (interaction.isUserContextMenu()) {
       targetMention = `on ${Formatters.userMention(interaction.targetUser.id)}`
     }
@@ -95,7 +114,8 @@ export class BotLogger {
         ${Formatters.bold('Context Menu Error')}
         ${executionInfo}
       `,
-      error
+      error,
+      components
     )
     await interaction.reply({ content: 'มีบางอย่างผิดพลาด โปรดติดต่อแอดมิน', ephemeral: true })
   }
