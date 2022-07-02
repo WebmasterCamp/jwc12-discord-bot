@@ -10,13 +10,7 @@ import {
   UsePipes,
 } from '@discord-nestjs/core'
 import { Camper } from '@prisma/client'
-import {
-  Formatters,
-  InteractionReplyOptions,
-  Message,
-  MessageOptions,
-  MessagePayload,
-} from 'discord.js'
+import { Formatters, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
 import {
   GiveCoinUpdateMeta,
@@ -31,7 +25,7 @@ import { NotRegisteredError } from 'src/discord-bot/errors'
 import { CommandErrorFilter } from '../error-filter'
 import { GiveDTO } from './give.dto'
 
-const STEAL_SUCCESS_RATE = 0.4
+const STEAL_SUCCESS_RATE = 0.35
 const STEAL_PENALTY_MULTIPLIER = 1.5
 const STEAL_MAX_FRACTION = 0.2
 const STEAL_COUNT_TO_WARN = 5
@@ -82,14 +76,15 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     }
 
     if (dto.amount < 0) {
-      return await this.steal(
-        interaction.user.id,
-        dto.to,
-        from,
-        to,
-        -dto.amount,
-        interaction.channel.send
-      )
+      const stealCount = await this.campers.getStealCount(from.id)
+      if ((stealCount + 1) % STEAL_COUNT_TO_WARN === 0) {
+        await interaction.channel.send(
+          `เตือนภัย❗️ ${Formatters.userMention(interaction.user.id)} ขโมยเป็นรอบที่ ${
+            stealCount + 1
+          } แล้ว 😡`
+        )
+      }
+      return await this.steal(interaction.user.id, dto.to, from, to, -dto.amount)
     }
   }
 
@@ -129,8 +124,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     toDiscordId: string,
     from: Camper,
     to: Camper,
-    amount: number,
-    sendToChannel: (options: string | MessagePayload | MessageOptions) => Promise<Message<boolean>>
+    amount: number
   ): Promise<InteractionReplyOptions> {
     const penalty = Math.round(STEAL_PENALTY_MULTIPLIER * amount)
     const maxAmount = Math.round(STEAL_MAX_FRACTION * to.coins)
@@ -142,7 +136,8 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
       }
     }
 
-    const success = Math.random() < STEAL_SUCCESS_RATE
+    const randomNumber = Math.random()
+    const success = randomNumber < STEAL_SUCCESS_RATE
     if (success) {
       const stealAmount = Math.min(amount, maxAmount)
       const fromMeta: StealCoinUpdateMeta = {
@@ -154,15 +149,7 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
         stolenById: from.id,
       }
       await this.campers.transferCoin(to.id, from.id, toMeta, fromMeta, stealAmount)
-      const stealCount = await this.campers.getStealCount(fromDiscordId)
 
-      if (stealCount % STEAL_COUNT_TO_WARN === 0) {
-        await sendToChannel(
-          `เตือนภัย❗️ ${Formatters.userMention(
-            fromDiscordId
-          )} ขโมยเป็ยรอบที่ ${stealCount} แล้ว 😡`
-        )
-      }
       return {
         content: `${Formatters.userMention(fromDiscordId)} ขโมยแต้มบุญจาก ${Formatters.userMention(
           toDiscordId
