@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common'
 
-import { CommandInteraction, Formatters, Guild, Interaction, TextChannel } from 'discord.js'
+import {
+  CommandInteraction,
+  ContextMenuInteraction,
+  Formatters,
+  Guild,
+  Interaction,
+  TextChannel,
+} from 'discord.js'
 import { GuildService } from 'src/guild/guild.service'
 import dedent from 'ts-dedent'
 
@@ -55,6 +62,27 @@ export class BotLogger {
       interaction,
       dedent`
         ${Formatters.bold('Command Error')}
+        ${executionInfo}
+      `,
+      error
+    )
+    await interaction.reply({ content: 'มีบางอย่างผิดพลาด โปรดติดต่อแอดมิน', ephemeral: true })
+  }
+
+  async logContextMenuError(interaction: ContextMenuInteraction, error: Error) {
+    const userMention = Formatters.userMention(interaction.user.id)
+    let targetMention: string
+    if (interaction.isMessageContextMenu()) {
+      targetMention = `on message ${Formatters.inlineCode(interaction.targetMessage.id)}`
+    } else if (interaction.isUserContextMenu()) {
+      targetMention = `on ${Formatters.userMention(interaction.targetUser.id)}`
+    }
+    const commandName = Formatters.bold(interaction.commandName)
+    const executionInfo = `${userMention} used ${commandName} ${targetMention}`
+    await this.logError(
+      interaction,
+      dedent`
+        ${Formatters.bold('Context Menu Error')}
         ${executionInfo}
       `,
       error

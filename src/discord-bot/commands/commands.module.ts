@@ -7,6 +7,7 @@ import { PrismaModule } from 'src/prisma/prisma.module'
 
 import { DiscordBotModule } from '../discord-bot.module'
 import { BalanceCommand } from './balance/balance.command'
+import { ClearCommand } from './clear/clear.command'
 import { GiveCommand } from './give/give.command'
 import { GrantCommand } from './grant/grant.command.ts'
 import { LoggerCommand } from './logger/logger.command'
@@ -37,6 +38,7 @@ import { ViewBalanceCommand } from './viewbalance/viewbalance.command'
     GrantCommand,
     SetupCommand,
     StaffCommand,
+    ClearCommand,
   ],
 })
 export class DiscordBotSlashCommands {}

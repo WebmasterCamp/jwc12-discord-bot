@@ -15,7 +15,10 @@ export class CommandErrorFilter implements DiscordExceptionFilter {
   async catch(error: Error, metadata: DiscordArgumentMetadata<'interactionCreate'>): Promise<void> {
     const [interaction] = metadata.eventArgs
 
-    if (!interaction.isCommand()) return
-    this.botLogger.logCommandError(interaction, error)
+    if (interaction.isCommand()) {
+      await this.botLogger.logCommandError(interaction, error)
+    } else if (interaction.isContextMenu()) {
+      await this.botLogger.logContextMenuError(interaction, error)
+    }
   }
 }
