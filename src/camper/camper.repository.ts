@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common'
 
+import { Prisma } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
+
+import { CoinUpdateMeta } from './coin-update-meta'
 
 @Injectable()
 export class CamperRepository {
@@ -34,11 +37,18 @@ export class CamperRepository {
     return account.Camper
   }
 
-  async incrementCoinByIds(camperIds: string[], amount: number) {
-    await this.prisma.camper.updateMany({
-      where: { id: { in: camperIds } },
-      data: { coins: { increment: amount } },
-    })
+  async incrementCoinByIds(camperIds: string[], amount: number, meta: CoinUpdateMeta) {
+    const ids = [...new Set(camperIds)]
+    const metadata = meta as unknown as Prisma.JsonObject
+    await this.prisma.$transaction([
+      this.prisma.camper.updateMany({
+        where: { id: { in: camperIds } },
+        data: { coins: { increment: amount } },
+      }),
+      this.prisma.coinUpdate.createMany({
+        data: ids.map((id) => ({ camperId: id, amount, metadata })),
+      }),
+    ])
   }
 
   async getCoinsById(camperId: string): Promise<number> {
@@ -58,17 +68,43 @@ export class CamperRepository {
     return campers.reduce((sum, camper) => sum + camper.coins, 0)
   }
 
-  async transferCoin(fromId: string, toId: string, amount: number) {
+  async transferCoin(
+    fromId: string,
+    toId: string,
+    fromMeta: CoinUpdateMeta,
+    toMeta: CoinUpdateMeta,
+    amount: number
+  ) {
     await this.prisma.$transaction([
       this.prisma.camper.update({
         select: { coins: true },
         where: { id: fromId },
-        data: { coins: { decrement: amount } },
+        data: {
+          coins: { decrement: amount },
+          coinUpdates: {
+            create: [
+              {
+                amount: -amount,
+                metadata: fromMeta as unknown as Prisma.JsonObject,
+              },
+            ],
+          },
+        },
       }),
       this.prisma.camper.update({
         select: { coins: true },
         where: { id: toId },
-        data: { coins: { increment: amount } },
+        data: {
+          coins: { increment: amount },
+          coinUpdates: {
+            create: [
+              {
+                amount: amount,
+                metadata: toMeta as unknown as Prisma.JsonObject,
+              },
+            ],
+          },
+        },
       }),
     ])
   }

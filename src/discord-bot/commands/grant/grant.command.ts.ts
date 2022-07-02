@@ -11,6 +11,7 @@ import {
 } from '@discord-nestjs/core'
 import { Guild, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
+import { GrantCoinUpdateMeta } from 'src/camper/coin-update-meta'
 import { Mention, mentionFromId } from 'src/discord-bot/utils/mention'
 import { GuildService } from 'src/guild/guild.service'
 
@@ -50,7 +51,23 @@ export class GrantCommand implements DiscordTransformedCommand<GrantDTO> {
       }
     }
     const amount = dto.amount
-    await this.campers.incrementCoinByIds(ids, amount)
+    let meta: GrantCoinUpdateMeta
+    if (target.type === 'role') {
+      meta = {
+        type: 'grant',
+        staffDiscordId: interaction.user.id,
+        targetType: target.type,
+        targetDiscordId: target.roleId,
+      }
+    } else if (target.type === 'user') {
+      meta = {
+        type: 'grant',
+        staffDiscordId: interaction.user.id,
+        targetType: target.type,
+        targetDiscordId: target.userId,
+      }
+    }
+    await this.campers.incrementCoinByIds(ids, amount, meta)
 
     if (target.type === 'role') {
       return {

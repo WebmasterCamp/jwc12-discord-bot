@@ -12,6 +12,14 @@ import {
 import { Camper } from '@prisma/client'
 import { Formatters, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
+import {
+  GiveCoinUpdateMeta,
+  GiveStealPenaltyCoinUpdateMeta,
+  GivenCoinUpdateMeta,
+  GivenStealPenaltyCoinUpdateMeta,
+  StealCoinUpdateMeta,
+  StolenCoinUpdateMeta,
+} from 'src/camper/coin-update-meta'
 import { NotRegisteredError } from 'src/discord-bot/errors'
 
 import { CommandErrorFilter } from '../error-filter'
@@ -86,7 +94,15 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
       }
     }
 
-    await this.campers.transferCoin(from.id, to.id, amount)
+    const fromMeta: GiveCoinUpdateMeta = {
+      type: 'give',
+      giveToId: to.id,
+    }
+    const toMeta: GivenCoinUpdateMeta = {
+      type: 'given',
+      givenById: from.id,
+    }
+    await this.campers.transferCoin(from.id, to.id, fromMeta, toMeta, amount)
     return {
       content: `${Formatters.userMention(fromDiscordId)} โอนแต้มบุญให้ ${Formatters.userMention(
         toDiscordId
@@ -114,14 +130,30 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     const success = Math.random() < STEAL_SUCCESS_RATE
     if (success) {
       const stealAmount = Math.min(amount, maxAmount)
-      await this.campers.transferCoin(to.id, from.id, stealAmount)
+      const fromMeta: StealCoinUpdateMeta = {
+        type: 'steal',
+        stealFromId: to.id,
+      }
+      const toMeta: StolenCoinUpdateMeta = {
+        type: 'stolen',
+        stolenById: from.id,
+      }
+      await this.campers.transferCoin(to.id, from.id, toMeta, fromMeta, stealAmount)
       return {
         content: `${Formatters.userMention(fromDiscordId)} ขโมยแต้มบุญจาก ${Formatters.userMention(
           toDiscordId
         )} มาได้ ${stealAmount} แต้มบุญ 💰`,
       }
     } else {
-      await this.campers.transferCoin(from.id, to.id, penalty)
+      const fromMeta: GiveStealPenaltyCoinUpdateMeta = {
+        type: 'give-steal-penalty',
+        giveToId: to.id,
+      }
+      const toMeta: GivenStealPenaltyCoinUpdateMeta = {
+        type: 'given-steal-penalty',
+        givenById: from.id,
+      }
+      await this.campers.transferCoin(from.id, to.id, fromMeta, toMeta, penalty)
       return {
         content: `${Formatters.userMention(fromDiscordId)} ขโมยแต้มบุญจาก ${Formatters.userMention(
           toDiscordId

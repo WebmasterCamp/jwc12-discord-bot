@@ -60,6 +60,7 @@ model Camper {
   ContentQuestion     ContentQuestion[]
   DesignQuestion      DesignQuestion[]
   MarketingQuestion   MarketingQuestion[]
+  coinUpdates         CoinUpdate[]
 }
 
 model DiscordAccount {
@@ -147,4 +148,16 @@ enum BranchType {
   MARKETING
   CONTENT
   DESIGN
+}
+
+model CoinUpdate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  camperId String @db.Uuid
+  camper   Camper @relation(fields: [camperId], references: [id])
+
+  amount   Int
+  metadata Json
 }
