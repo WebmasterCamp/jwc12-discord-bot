@@ -12,6 +12,7 @@ import {
 import { Formatters, Guild, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
 import { Mention, mentionFromId } from 'src/discord-bot/utils/mention'
+import { GuildService } from 'src/guild/guild.service'
 
 import { CommandErrorFilter } from '../error-filter'
 import { ViewBalanceDTO } from './viewbalance.dto'
@@ -26,7 +27,7 @@ import { ViewBalanceDTO } from './viewbalance.dto'
 export class ViewBalanceCommand implements DiscordTransformedCommand<ViewBalanceDTO> {
   private readonly logger = new Logger(ViewBalanceCommand.name)
 
-  constructor(private campers: CamperRepository) {
+  constructor(private campers: CamperRepository, private guildService: GuildService) {
     this.logger.log(`${ViewBalanceCommand.name} initialized`)
   }
 
@@ -70,9 +71,7 @@ export class ViewBalanceCommand implements DiscordTransformedCommand<ViewBalance
         const camperId = await this.campers.getIdByDiscordId(mention.userId)
         return camperId ? [camperId] : null
       case 'role':
-        const role = await guild.roles.fetch(mention.roleId)
-        if (!role) return null
-        const memberIds = role.members.map((member) => member.id)
+        const memberIds = await this.guildService.getDiscordIdsByRole(guild, mention.roleId)
         return await this.campers.getIdsByDiscordIds(memberIds)
       default:
         return null

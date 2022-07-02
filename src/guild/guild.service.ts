@@ -67,4 +67,10 @@ export class GuildService {
       create: { guildId: guildId, errorChannel: channelId },
     })
   }
+
+  async getDiscordIdsByRole(guild: Guild, roleId: string) {
+    const members = await guild.members.fetch()
+    const roleMembers = members.filter((member) => member.roles.cache.has(roleId))
+    return roleMembers.map((member) => member.id)
+  }
 }
