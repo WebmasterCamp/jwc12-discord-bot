@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { Command, DiscordCommand, UseFilters } from '@discord-nestjs/core'
-import { CommandInteraction, InteractionReplyOptions } from 'discord.js'
+import { CommandInteraction, Formatters, InteractionReplyOptions } from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
 import { NotRegisteredError } from 'src/discord-bot/errors'
 
@@ -28,9 +28,10 @@ export class BalanceCommand implements DiscordCommand {
     }
 
     const coins = await this.campers.getCoinsById(camperId)
+    const userMention = Formatters.userMention(interaction.user.id)
 
     return {
-      content: `แต้มบุญคงเหลือของคุณอยู่ที่ ${coins} แต้ม`,
+      content: `${userMention} มีแต้มบุญคงเหลืออยู่ที่ ${coins} แต้ม`,
     }
   }
 }
