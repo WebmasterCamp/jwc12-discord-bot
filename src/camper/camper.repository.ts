@@ -153,4 +153,13 @@ export class CamperRepository {
       },
     })
   }
+
+  async getStealCount(uid: string) {
+    return await this.prisma.coinUpdate.count({
+      where: {
+        camperId: uid,
+        amount: { lte: 0 },
+      },
+    })
+  }
 }

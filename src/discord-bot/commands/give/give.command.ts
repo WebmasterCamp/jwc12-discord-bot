@@ -10,7 +10,13 @@ import {
   UsePipes,
 } from '@discord-nestjs/core'
 import { Camper } from '@prisma/client'
-import { Formatters, InteractionReplyOptions } from 'discord.js'
+import {
+  Formatters,
+  InteractionReplyOptions,
+  Message,
+  MessageOptions,
+  MessagePayload,
+} from 'discord.js'
 import { CamperRepository } from 'src/camper/camper.repository'
 import {
   GiveCoinUpdateMeta,
@@ -25,9 +31,10 @@ import { NotRegisteredError } from 'src/discord-bot/errors'
 import { CommandErrorFilter } from '../error-filter'
 import { GiveDTO } from './give.dto'
 
-const STEAL_SUCCESS_RATE = 0.4
+const STEAL_SUCCESS_RATE = 0.35
 const STEAL_PENALTY_MULTIPLIER = 1.5
 const STEAL_MAX_FRACTION = 0.2
+const STEAL_COUNT_TO_WARN = 5
 
 @Command({
   name: 'give',
@@ -75,7 +82,14 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     }
 
     if (dto.amount < 0) {
-      return await this.steal(interaction.user.id, dto.to, from, to, -dto.amount)
+      return await this.steal(
+        interaction.user.id,
+        dto.to,
+        from,
+        to,
+        -dto.amount,
+        interaction.channel.send
+      )
     }
   }
 
@@ -115,7 +129,8 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
     toDiscordId: string,
     from: Camper,
     to: Camper,
-    amount: number
+    amount: number,
+    sendToChannel: (options: string | MessagePayload | MessageOptions) => Promise<Message<boolean>>
   ): Promise<InteractionReplyOptions> {
     const penalty = Math.round(STEAL_PENALTY_MULTIPLIER * amount)
     const maxAmount = Math.round(STEAL_MAX_FRACTION * to.coins)
@@ -139,6 +154,15 @@ export class GiveCommand implements DiscordTransformedCommand<GiveDTO> {
         stolenById: from.id,
       }
       await this.campers.transferCoin(to.id, from.id, toMeta, fromMeta, stealAmount)
+      const stealCount = await this.campers.getStealCount(fromDiscordId)
+
+      if (stealCount % STEAL_COUNT_TO_WARN === 0) {
+        await sendToChannel(
+          `เตือนภัย❗️ ${Formatters.userMention(
+            fromDiscordId
+          )} ขโมยเป็ยรอบที่ ${stealCount} แล้ว 😡`
+        )
+      }
       return {
         content: `${Formatters.userMention(fromDiscordId)} ขโมยแต้มบุญจาก ${Formatters.userMention(
           toDiscordId
