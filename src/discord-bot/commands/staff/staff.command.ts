@@ -36,7 +36,7 @@ export class StaffCommand implements DiscordTransformedCommand<StaffDTO> {
   ): Promise<InteractionReplyOptions> {
     await this.guildService.assignRoleToId(interaction.guild, 'STAFF', dto.user)
     await interaction.guild.members.edit(dto.user, {
-      nick: `Staff - ${dto.nickname}`,
+      nick: `Staff - พี่${dto.nickname}`,
     })
     return {
       content: `ให้ role staff กับ ${Formatters.userMention(dto.user)} แล้ว`,
