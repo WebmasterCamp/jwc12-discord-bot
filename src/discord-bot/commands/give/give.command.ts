@@ -31,7 +31,7 @@ import { NotRegisteredError } from 'src/discord-bot/errors'
 import { CommandErrorFilter } from '../error-filter'
 import { GiveDTO } from './give.dto'
 
-const STEAL_SUCCESS_RATE = 0.35
+const STEAL_SUCCESS_RATE = 0.4
 const STEAL_PENALTY_MULTIPLIER = 1.5
 const STEAL_MAX_FRACTION = 0.2
 const STEAL_COUNT_TO_WARN = 5
