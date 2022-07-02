@@ -57,7 +57,7 @@ export class GrantCommand implements DiscordTransformedCommand<GrantDTO> {
       }
     } else {
       return {
-        content: `<@${interaction.user.id}> ได้แต้มบุญเพิ่ม ${amount} แต้ม`,
+        content: `${target.formatted} ได้แต้มบุญเพิ่ม ${amount} แต้ม`,
       }
     }
   }
