@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 
 import { Prisma } from '@prisma/client'
+import { branchAbbreviations } from 'src/discord-bot/utils/constants'
 import { PrismaService } from 'src/prisma/prisma.service'
 
 import { CoinUpdateMeta } from './coin-update-meta'
@@ -136,7 +137,7 @@ export class CamperRepository {
     return await this.prisma.camper.findMany({
       select: { nickname: true, branch: true, coins: true },
       orderBy: { coins: 'desc' },
-      take: 6,
+      take: 10,
     })
   }
 
@@ -154,6 +155,24 @@ export class CamperRepository {
     })
   }
 
+  async getTopStealer() {
+    const data = await this.prisma.coinUpdate.findMany({
+      select: { metadata: true, Camper: { select: { nickname: true, branch: true } } },
+    })
+    const stealData = data.reduce((result, coinUpdate) => {
+      const metadata = coinUpdate.metadata as unknown as CoinUpdateMeta
+      if (metadata.type === 'steal' || metadata.type === 'give-steal-penalty') {
+        console.log(coinUpdate)
+        const name = `[${branchAbbreviations[coinUpdate.Camper.branch]}] ${
+          coinUpdate.Camper.nickname
+        }`
+        result[name] = (result[name] ?? 0) + 1
+      }
+      return result
+    }, {} as Record<string, number>)
+    return stealData
+  }
+
   async getStealCount(uid: string): Promise<number> {
     const data = await this.prisma.coinUpdate.findMany({
       select: { amount: true, metadata: true },
@@ -164,7 +183,6 @@ export class CamperRepository {
       if (metadata.type === 'steal' || metadata.type === 'give-steal-penalty') return sum + 1
       return sum
     }, 0)
-    console.log(stealCount)
     return stealCount
   }
 }

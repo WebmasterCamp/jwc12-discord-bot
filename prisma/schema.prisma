@@ -156,7 +156,7 @@ model CoinUpdate {
   updatedAt DateTime @updatedAt
 
   camperId String @db.Uuid
-  camper   Camper @relation(fields: [camperId], references: [id])
+  Camper   Camper @relation(fields: [camperId], references: [id])
 
   amount   Int
   metadata Json
