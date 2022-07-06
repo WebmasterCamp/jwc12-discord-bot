@@ -162,7 +162,23 @@ export class CamperRepository {
     const stealData = data.reduce((result, coinUpdate) => {
       const metadata = coinUpdate.metadata as unknown as CoinUpdateMeta
       if (metadata.type === 'steal' || metadata.type === 'give-steal-penalty') {
-        console.log(coinUpdate)
+        const name = `[${branchAbbreviations[coinUpdate.Camper.branch]}] ${
+          coinUpdate.Camper.nickname
+        }`
+        result[name] = (result[name] ?? 0) + 1
+      }
+      return result
+    }, {} as Record<string, number>)
+    return stealData
+  }
+
+  async getTopStolen() {
+    const data = await this.prisma.coinUpdate.findMany({
+      select: { metadata: true, Camper: { select: { nickname: true, branch: true } } },
+    })
+    const stealData = data.reduce((result, coinUpdate) => {
+      const metadata = coinUpdate.metadata as unknown as CoinUpdateMeta
+      if (metadata.type === 'stolen' || metadata.type === 'given-steal-penalty') {
         const name = `[${branchAbbreviations[coinUpdate.Camper.branch]}] ${
           coinUpdate.Camper.nickname
         }`
