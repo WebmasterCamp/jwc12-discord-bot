@@ -12,7 +12,9 @@ export class RankStealSubCommand implements DiscordCommand {
   async handler(interaction: CommandInteraction) {
     const stealData = await this.campers.getTopStealer()
 
-    const records = Object.entries(stealData).sort((dataA, dataB) => dataA[1] - dataB[1])
+    const records = Object.entries(stealData)
+      .sort((dataA, dataB) => dataA[1] - dataB[1])
+      .slice(0, 7)
 
     await interaction.reply({
       content: `อันดับนักขโมยรายบุคคล\n${records
