@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
-import { Guild } from 'discord.js'
+import { Guild, GuildMember } from 'discord.js'
 import { PrismaService } from 'src/prisma/prisma.service'
 
 import { RoleKey, roles } from './roles'
@@ -49,8 +49,13 @@ export class GuildService {
   }
 
   async assignRoleToId(guild: Guild, roleKey: RoleKey, discordId: string) {
+    const guildMember = await guild.members.fetch(discordId)
+    await this.assignRoleToGuildMemeber(guild, roleKey, guildMember)
+  }
+
+  async assignRoleToGuildMemeber(guild: Guild, roleKey: RoleKey, guildMember: GuildMember) {
     const role = await this.getRole(guild, roleKey)
-    await (await guild.members.fetch()).get(discordId).roles.add(role)
+    await guildMember.roles.add(role)
   }
 
   async setLoggerChannel(guildId: string, channelId: string) {
@@ -88,9 +93,11 @@ export class GuildService {
         },
       },
     })
+    const members = await guild.members.fetch()
     for (const account of accounts) {
       const roleKey = account.Camper.Team.roleKey as RoleKey
-      await this.assignRoleToId(guild, roleKey, account.discordId)
+      const member = members.get(account.discordId)
+      await this.assignRoleToGuildMemeber(guild, roleKey, member)
     }
   }
 }
