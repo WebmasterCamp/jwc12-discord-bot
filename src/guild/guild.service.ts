@@ -13,7 +13,7 @@ export class GuildService {
     await this.getGuildMetadata(guild.id)
     const roleKeys = Object.keys(roles) as RoleKey[]
     await Promise.all(roleKeys.map((roleKey) => this.getRole(guild, roleKey)))
-    await this.assignTeamRoles(guild)
+    // await this.assignTeamRoles(guild)
   }
 
   async getGuildMetadata(guildId: string) {

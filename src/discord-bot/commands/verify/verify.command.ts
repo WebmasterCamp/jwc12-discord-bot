@@ -20,7 +20,6 @@ import { BotLogger } from 'src/discord-bot/logger/bot-logger'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
 import { branchAbbreviations } from 'src/discord-bot/utils/constants'
 import { GuildService } from 'src/guild/guild.service'
-import { RoleKey } from 'src/guild/roles'
 
 const VERIFY_BUTTON_ID = 'verifyButton'
 const VERIFY_MODAL_ID = 'verifyModal'
@@ -131,8 +130,8 @@ export class VerifyCommand implements DiscordCommand {
       await this.campers.associateToDiscordId(camper.id, modal.user.id)
       await this.guildService.assignRoleToId(modal.guild, 'CAMPER', modal.user.id)
       await this.guildService.assignRoleToId(modal.guild, camper.branch, modal.user.id)
-      const teamRoleKey = camper.Team.roleKey as RoleKey
-      await this.guildService.assignRoleToId(modal.guild, teamRoleKey, modal.user.id)
+      // const teamRoleKey = camper.Team.roleKey as RoleKey
+      // await this.guildService.assignRoleToId(modal.guild, teamRoleKey, modal.user.id)
       const branchAbbr = branchAbbreviations[camper.branch]
       await modal.guild.members.edit(modal.user.id, {
         nick: `[${branchAbbr}] ${camper.nickname} JWC12`,
