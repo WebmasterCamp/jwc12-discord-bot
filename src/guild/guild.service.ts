@@ -13,6 +13,7 @@ export class GuildService {
     await this.getGuildMetadata(guild.id)
     const roleKeys = Object.keys(roles) as RoleKey[]
     await Promise.all(roleKeys.map((roleKey) => this.getRole(guild, roleKey)))
+    await this.assignTeamRoles(guild)
   }
 
   async getGuildMetadata(guildId: string) {
@@ -49,7 +50,7 @@ export class GuildService {
 
   async assignRoleToId(guild: Guild, roleKey: RoleKey, discordId: string) {
     const role = await this.getRole(guild, roleKey)
-    await guild.members.cache.get(discordId).roles.add(role)
+    await (await guild.members.fetch()).get(discordId).roles.add(role)
   }
 
   async setLoggerChannel(guildId: string, channelId: string) {
@@ -72,5 +73,24 @@ export class GuildService {
     const members = await guild.members.fetch()
     const roleMembers = members.filter((member) => member.roles.cache.has(roleId))
     return roleMembers.map((member) => member.id)
+  }
+
+  async assignTeamRoles(guild: Guild) {
+    const accounts = await this.prisma.discordAccount.findMany({
+      select: {
+        discordId: true,
+        Camper: {
+          select: {
+            Team: {
+              select: { roleKey: true },
+            },
+          },
+        },
+      },
+    })
+    for (const account of accounts) {
+      const roleKey = account.Camper.Team.roleKey as RoleKey
+      await this.assignRoleToId(guild, roleKey, account.discordId)
+    }
   }
 }

@@ -75,6 +75,7 @@ model Team {
   updatedAt DateTime @updatedAt
 
   name    String
+  roleKey String
   campers Camper[]
 }
 

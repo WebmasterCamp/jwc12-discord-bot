@@ -2,7 +2,17 @@ import { BranchType } from '@prisma/client'
 import { ColorResolvable, CreateRoleOptions, Permissions } from 'discord.js'
 import { capitalize } from 'src/discord-bot/utils/capitialize'
 
-export type RoleKey = 'ADMIN' | 'STAFF' | 'CAMPER' | BranchType
+export type RoleKey =
+  | 'ADMIN'
+  | 'STAFF'
+  | 'CAMPER'
+  | BranchType
+  | 'TEAM_1'
+  | 'TEAM_2'
+  | 'TEAM_3'
+  | 'TEAM_4'
+  | 'TEAM_5'
+  | 'TEAM_6'
 
 const BranchColorMapper: Record<BranchType, ColorResolvable> = {
   [BranchType.CONTENT]: 'AQUA',
@@ -56,12 +66,25 @@ export const roles: Record<RoleKey, CreateRoleOptions> = {
   DESIGN: createBranchRoleOptions(BranchType.DESIGN),
   MARKETING: createBranchRoleOptions(BranchType.MARKETING),
   PROGRAMMING: createBranchRoleOptions(BranchType.PROGRAMMING),
+  TEAM_1: createTeamRoleOptions(1),
+  TEAM_2: createTeamRoleOptions(2),
+  TEAM_3: createTeamRoleOptions(3),
+  TEAM_4: createTeamRoleOptions(4),
+  TEAM_5: createTeamRoleOptions(5),
+  TEAM_6: createTeamRoleOptions(6),
 }
 
 function createBranchRoleOptions(name: BranchType): CreateRoleOptions {
   return {
     name: `${capitalize(name)}`,
     color: BranchColorMapper[name],
+    mentionable: true,
+  }
+}
+
+function createTeamRoleOptions(teamNo: number): CreateRoleOptions {
+  return {
+    name: `ใบที่ ${teamNo}`,
     mentionable: true,
   }
 }

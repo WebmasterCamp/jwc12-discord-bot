@@ -112,7 +112,7 @@ export class CamperRepository {
 
   async findByVerifyCode(verifyCode: string) {
     const camper = await this.prisma.camper.findFirst({
-      select: { id: true, nickname: true, branch: true },
+      select: { id: true, nickname: true, branch: true, Team: { select: { roleKey: true } } },
       where: {
         firebaseId: {
           startsWith: verifyCode,
