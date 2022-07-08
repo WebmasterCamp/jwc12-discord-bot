@@ -8,6 +8,7 @@ import { PrismaModule } from 'src/prisma/prisma.module'
 import { DiscordBotModule } from '../discord-bot.module'
 import { BalanceCommand } from './balance/balance.command'
 import { ClearCommand } from './clear/clear.command'
+import { DebugListCommand } from './debuglist/debuglist.command'
 import { GiveCommand } from './give/give.command'
 import { GrantCommand } from './grant/grant.command.ts'
 import { LoggerErrorsSubCommand } from './logger/logger-errors.command'
@@ -42,6 +43,7 @@ import { ViewBalanceCommand } from './viewbalance/viewbalance.command'
     RankBranchSubCommand,
     RankStealSubCommand,
     RankStolenSubCommand,
+    DebugListCommand,
     GiveCommand,
     GrantCommand,
     SetupCommand,
