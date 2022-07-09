@@ -20,6 +20,7 @@ import { RankBranchSubCommand } from './rank/rank-branch.command'
 import { RankIndividualSubCommand } from './rank/rank-individual.command'
 import { RankStealSubCommand } from './rank/rank-steal.command'
 import { RankStolenSubCommand } from './rank/rank-stolen-command'
+import { RankTeamSubCommand } from './rank/rank-team.command'
 import { RankCommand } from './rank/rank.command'
 import { SetupCommand } from './setup/setup.command'
 import { StaffCommand } from './staff/staff.command'
@@ -44,6 +45,7 @@ import { ViewBalanceCommand } from './viewbalance/viewbalance.command'
     RankStealSubCommand,
     RankStolenSubCommand,
     DebugListCommand,
+    RankTeamSubCommand,
     GiveCommand,
     GrantCommand,
     SetupCommand,

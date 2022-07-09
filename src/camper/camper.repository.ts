@@ -189,6 +189,29 @@ export class CamperRepository {
     return stealData
   }
 
+  async getTopTeam() {
+    return await this.prisma.camper.groupBy({
+      by: ['teamId'],
+      _sum: {
+        coins: true,
+      },
+      orderBy: {
+        _sum: {
+          coins: 'desc',
+        },
+      },
+    })
+  }
+
+  async getTeamName(teamId: string) {
+    return (
+      await this.prisma.team.findUnique({
+        select: { name: true },
+        where: { id: teamId },
+      })
+    ).name
+  }
+
   async getStealCount(uid: string): Promise<number> {
     const data = await this.prisma.coinUpdate.findMany({
       select: { amount: true, metadata: true },

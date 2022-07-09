@@ -4,6 +4,7 @@ import { RankBranchSubCommand } from './rank-branch.command'
 import { RankIndividualSubCommand } from './rank-individual.command'
 import { RankStealSubCommand } from './rank-steal.command'
 import { RankStolenSubCommand } from './rank-stolen-command'
+import { RankTeamSubCommand } from './rank-team.command'
 
 @Command({
   name: 'rank',
@@ -13,6 +14,7 @@ import { RankStolenSubCommand } from './rank-stolen-command'
     RankBranchSubCommand,
     RankStealSubCommand,
     RankStolenSubCommand,
+    RankTeamSubCommand,
   ],
 })
 export class RankCommand {}
